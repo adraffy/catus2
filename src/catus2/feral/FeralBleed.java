@@ -20,7 +20,7 @@ public class FeralBleed extends Buff<BuffModel,Feral,FeralView> {
     }
     
     public double getTickDamage() {
-        return v.getBleedMod() * snapshot * v.o.getRazorClawsMod() * v.o.getAP() * m.scaling;        
+        return v.getBleedMod() * snapshot * v.o.getRazorClawsMod() * v.o.getAP() * m.param;        
     }
     
 }

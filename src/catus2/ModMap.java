@@ -16,6 +16,9 @@ public class ModMap {
     private int freeAvail;
     private double cached;
     
+    static public ModMap sum() { return new ModMap(false); }
+    static public ModMap product() { return new ModMap(true); }
+    
     public ModMap(boolean product) {
         this.product = product;
         for (int i = 0; i < free.length; i++) {
@@ -26,7 +29,7 @@ public class ModMap {
         dirty = true;
     }
     
-    private double product() {
+    private double getProduct() {
         double p = 1;            
         for (int i = 0; i < keys.length; i++) {
             if (keys[i] != NULL_KEY) {
@@ -36,7 +39,7 @@ public class ModMap {
         return p;
     }
     
-    private double sum() {
+    private double getSum() {
         double p = 0;            
         for (int i = 0; i < keys.length; i++) {
             if (keys[i] != NULL_KEY) {
@@ -48,7 +51,7 @@ public class ModMap {
     
     public double fold() {
         if (dirty) {   
-            cached = product ? product() : sum();
+            cached = product ? getProduct() : getSum();
             dirty = false;
         }
         return cached;        
@@ -74,7 +77,7 @@ public class ModMap {
         if (key == NULL_KEY) {
             return;
         }
-        clear(key);
+        remove(key);
         if (freeAvail == 0) {
             int n = keys.length;
             keys = Arrays.copyOf(keys, n * 2);
@@ -93,7 +96,7 @@ public class ModMap {
         dirty = true;        
     }
     
-    public boolean clear(int id) {
+    public boolean remove(int id) {
         int n = keys.length;
         for (int i = 0; i < n; i++) {
             if (keys[i] == id) {

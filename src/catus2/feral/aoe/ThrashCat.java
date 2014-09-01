@@ -7,6 +7,7 @@ import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.UnitList;
 import catus2.feral.Feral;
+import catus2.feral.FeralBleed;
 import catus2.feral.FeralView;
 import catus2.feral.spells.FeralSpell;
 
@@ -30,16 +31,16 @@ public class ThrashCat extends FeralSpell {
     public void applyToUnits(UnitList list) {
         double crit = o.getCritChance();
         boolean bt = o.buff_bt.tryConsume();
-        double mod = o.getBloodtalonsMod(bt); // snapshot damage mod will get automatically applied by school
-        double snap = mod * o.getSnapshotableDamageMod();
+        double snap = o.getBloodtalonsMod(bt) * o.getSnapshotableDamageMod();
         for (Unit unit: list) {
             AttackT atk = o.yellow_melee(unit, crit);
             if (atk.landed) {
-                FeralView target = o.getView(unit);                
-                double dmg = mod * target.getBleedMod() * o.getRazorClawsMod() * o.getAP() * o.fgd.THRASH_CAT_INITIAL_DAMAGE_PER_AP;
-                o.applyDamage(dmg, unit, this, OriginT.BLEED, SchoolT.SCHOOLS_PHYSICAL, atk == AttackT.CRIT);
-                target.dot_thrash_cat.snapshot = snap;
-                target.dot_thrash_cat.activate();                
+                FeralView v = o.getView(unit);
+                v.dot_thrash_bear.cancel();
+                FeralBleed bleed = v.dot_thrash_cat;                
+                bleed.snapshot = snap;
+                bleed.activate();                
+                o.applyDamage(o.fgd.THRASH_CAT_INITIAL_TICK_MOD * bleed.getTickDamage(), unit, this, OriginT.BLEED, SchoolT.SCHOOLS_PHYSICAL, atk == AttackT.CRIT);                                
             }
         }
     }

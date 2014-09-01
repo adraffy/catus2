@@ -3,7 +3,9 @@ package catus2.buffs;
 public class BuffModel {
 
     public final int id;
-    
+
+    public boolean enabled;
+    public boolean passive; // activate once
     public boolean unique; // one per unit
     public boolean pandemic;
     
@@ -14,7 +16,7 @@ public class BuffModel {
     public int base_frequency;
     public boolean hasted;
     
-    public double scaling;
+    public double param; // scaling param or modifier
     
     public BuffModel(int id) {
         this.id = id;

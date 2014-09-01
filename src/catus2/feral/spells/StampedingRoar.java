@@ -14,7 +14,7 @@ public class StampedingRoar extends AbstractSpell<Feral> {
     
     @Override
     public boolean isCastable() {
-        return !o.buff_stampRoar.isActive() && (o.cfg.glyph_stampRoar || o.isCatOrBearForm()) && super.isCastable();
+        return !o.selfView.buff_stampRoar.isActive() && (o.cfg.glyph_stampRoar || o.isCatOrBearForm()) && super.isCastable();
     }
 
     @Override
@@ -24,10 +24,9 @@ public class StampedingRoar extends AbstractSpell<Feral> {
         }        
         UnitList list = o.world.retainUnitList();
         try {
-            o.collectUnits(list, false, o.world_x, o.world_y, o.cfg.glyph_stampRoar ? o.fgd.STAMP_ROAR_GLYPH_RADIUS : o.fgd.STAMP_ROAR_RADIUS);
+            o.collectUnits(list, false, o.world_x, o.world_y, getRangeMax());
             for (Unit unit: list) {  
-                unit.buff_stampRoar.mod = o.fgd.STAMP_ROAR_SPEED_BONUS;
-                unit.buff_stampRoar.activateForDuration(o.fgd.STAMP_ROAR_DURATION);            
+                o.getView(unit).buff_stampRoar.activate();
             }
         } finally {
             o.world.releaseUnitList(list);            

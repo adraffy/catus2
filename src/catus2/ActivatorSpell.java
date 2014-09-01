@@ -3,7 +3,7 @@ package catus2;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 
-public class ActivatorSpell<O extends Unit<V>,V extends AbstractView<O>,B extends Buff<? extends BuffModel,O,V>> extends AbstractSpell<O> {
+public class ActivatorSpell<O extends Unit<O,V>,V extends AbstractView<O>,B extends Buff<? extends BuffModel,O,V>> extends AbstractSpell<O> {
 
     public final B buff;
     

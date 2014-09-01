@@ -6,7 +6,7 @@ import catus2.Timeline;
 import catus2.Unit;
 import catus2.World;
 
-public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O>> {
+public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public final M m;
     public final V v;
@@ -54,12 +54,15 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
         activateForDurationWithStacks(m.default_duration, Math.min((current_state ? current_stacks : m.default_stacks) + stacks, m.maximum_stacks)); 
     }
     public void activateForDurationWithStacks(int duration, int stacks) {
+        if (!m.enabled) {
+            return;
+        }
         if (stacks < 1 || stacks > m.maximum_stacks) {
             throw new IllegalStateException("Stacks: " + stacks);
         }
         if (duration < 0) {
             throw new IllegalStateException("Duration: " + duration);
-        }
+        }        
         if (m.unique) {
             Buff buff = (Buff)v.unit.uniqueBuffMap.put(m.id, this); // java generics bug
             if (buff != null && buff != this) {

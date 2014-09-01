@@ -1,7 +1,14 @@
 package catus2;
 
 public class SpellId {
-    
+    static public class Racial {
+        static public final int TOUCH_OF_ELUNE_DAY = 154796;
+        static public final int TOUCH_OF_ELUNE_NIGHT = 154797;
+        
+    }    
+    static public class Agi {
+        static public final int CRITICAL_STRIKES = 157447;        
+    }
     static public class Druid {
         static public final int CAT_FORM = 768;
         static public final int BEAR_FORM = 5487;
@@ -30,10 +37,13 @@ public class SpellId {
             static public final int PS_BUFF = 69369;
             static public final int OOC = 16864;
             static public final int HOTW = 108292;
+            static public final int SHARPENED_CLAWS = 165372;
+            static public final int LEATHER_SPECIALIZATION = 86097;
             static public class Set {
                 static public final int T15_4PC_BUFF = 138358; // tiger's fury
                 static public final int T16_2PC_BUFF = 144865; // feral fury
                 static public final int T16_4PC_BUFF = 146874; // feral rage
+                static public final int T17_4PC_BUFF = 166639; // proc driver is the buff?
                 static public final int PVP_WOD_4PC = 165699; // bloodletting
             }
         }

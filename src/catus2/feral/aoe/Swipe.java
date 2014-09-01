@@ -22,6 +22,9 @@ public class Swipe extends FeralSpell {
             boolean anyHit = false;
             boolean anyCrit = false;
             double crit = o.getCritChance();
+            if (o.buff_bonus_t15_4pc.tryConsume()) {
+                crit += o.fgd.BONUS_T15_4PC_EXTRA_CRIT;
+            }
             boolean bt = o.buff_bt.tryConsume();
             boolean t16_2pc = o.buff_bonus_t16_2pc.isActive();                    
             double mod = o.getBloodtalonsMod(bt);       

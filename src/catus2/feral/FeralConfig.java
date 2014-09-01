@@ -1,57 +1,51 @@
 package catus2.feral;
 
-public class FeralConfig {
-    
-    public boolean ignore_location;
-    
-    public boolean disable_racials;
+import catus2.ClassConfig;
 
-    // bonuses
-    public boolean bonus_t13_2pc;
-    public boolean bonus_t13_4pc;
-    public boolean bonus_t14_2pc;
-    public boolean bonus_t14_4pc;
-    public boolean bonus_t15_2pc;
-    public boolean bonus_t15_4pc;
-    public boolean bonus_t16_2pc;
-    public boolean bonus_t16_4pc;
-    public boolean bonus_t17_2pc;
-    public boolean bonus_t17_4pc;
-    public boolean bonus_pvp_wod_2pc; // Interrupting a spell with Skull Bash resets the cooldown of Tiger's Fury.
-    public boolean bonus_pvp_wod_4pc; // Shred critical strikes causes the target to take 10% increased damage from your bleed effects for 6 sec.
+public class FeralConfig extends ClassConfig {
+    
+    // features
+    public boolean disable_ps;
+    public boolean disable_primalFury;
+    public boolean disable_refunds;
+    public boolean disable_fbExtra;
+    public boolean disable_ooc;
+    public boolean disable_lotp;
+    
+    //int initialEnergy;
     
     // glyphs
-    public boolean glyph_catForm;  // +20% healing
-    public boolean glyph_cyclone;  // +5 yard range
-    public boolean glyph_dash;     // -60sec cooldown
-    public boolean glyph_roots;    // -0.5sec cast
-    public boolean glyph_ff;       // +10 yard range
-    public boolean glyph_fb;       // heal for 1.5% max hp / 10 energy used
-    public boolean glyph_maim;     // +100% damage
-    public boolean glyph_masterShapeshifter;   // free shifts
-    public boolean glyph_9th;      // -10% damage taken in cat
-    public boolean glyph_rake;     // +8 yards while stealth
-    public boolean glyph_rebirth;  // max hp on rez
-    public boolean glyph_savageRoar; // rake/shred under prowl => 5cp
-    public boolean glyph_savagery; // passive savage roar, -0.05%
-    public boolean glyph_skullBash;// +2 sec interrupt duration, +5sec cooldown duration
-    public boolean glyph_stampRoar;// radius = 30 yd, no form requirement
-    boolean glyph_si;       // cooldown -40sec, duration = -50%    
+    public boolean glyph_catForm;           // +20% healing
+    public boolean glyph_cyclone;           // +5 yard range
+    public boolean glyph_dash;              // -60sec cooldown
+    public boolean glyph_roots;             // -0.5sec cast
+    public boolean glyph_ff;                // +10 yard range
+    public boolean glyph_fb;                // heal for 1.5% max hp / 10 energy used
+    public boolean glyph_maim;              // +100% damage
+    public boolean glyph_masterShapeshifter;// free shifts
+    public boolean glyph_9th;               // -10% damage taken in cat
+    public boolean glyph_rake;              // +8 yards while stealth
+    public boolean glyph_rebirth;           // max hp on rez
+    public boolean glyph_savageRoar;        // rake/shred under prowl => 5cp
+    public boolean glyph_savagery;          // passive savage roar, -0.05%
+    public boolean glyph_skullBash;         // +2 sec interrupt duration, +5sec cooldown duration
+    public boolean glyph_stampRoar;         // radius = 30 yd, no form requirement
+    public boolean glyph_si;                // cooldown -40sec, duration = -50%    
     
     // 15
-    boolean talent_felineSwiftness;
-    boolean talent_displacerBeast;
-    boolean talent_wildCharge;
+    public boolean talent_felineSwiftness;
+    public boolean talent_displacerBeast;
+    public boolean talent_wildCharge;
     
     // 30
-    boolean talent_yserasGift;
-    boolean talent_renewal;
-    boolean talent_cenarionWard;
+    public boolean talent_yserasGift;
+    public boolean talent_renewal;
+    public boolean talent_cenarionWard;
     
     // 45
-    boolean talent_faerieSwarm;
-    boolean talent_massEntangle;
-    boolean talent_typhoon;
+    public boolean talent_faerieSwarm;
+    public boolean talent_massEntangle;
+    public boolean talent_typhoon;
         
     // 60
     public boolean talent_sotf;
@@ -59,9 +53,9 @@ public class FeralConfig {
     public boolean talent_fon;
     
     // 75
-    boolean talent_incapRoar;
-    boolean talent_ursolVortex;
-    boolean talent_mightyBash;
+    public boolean talent_incapRoar;
+    public boolean talent_ursolVortex;
+    public boolean talent_mightyBash;
     
     // 90
     public boolean talent_hotw;
@@ -73,13 +67,6 @@ public class FeralConfig {
     public boolean talent_bt;
     boolean talent_cos;
     
-    public boolean disable_ps;
-    public boolean disable_primalFury;
-    public boolean disable_refunds;
-    public boolean disable_fbExtra;
-    public boolean disable_ooc;
-    
-    int initialEnergy;
     
     
 }

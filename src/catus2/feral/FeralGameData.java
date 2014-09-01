@@ -4,6 +4,11 @@ public class FeralGameData {
     
     public double PP_REFUND_MOD = 0.8; // primal precision, refund on miss
     
+    public double SHARPENED_CLAWS_CRIT_MOD = 1.05;
+    public double CRITICAL_STRIKES_CRIT_BONUS = 0.1;
+    public double LEATHER_SPECIALIZATION_AGI_MOD = 1.05;
+    public double RACIAL_TOUCH_OF_ELUNE_PERC_BONUS = 0.01;
+    
     public double BITW_PERC = 0.25;
     
     public int OOC_DURATION = 15000;
@@ -47,7 +52,7 @@ public class FeralGameData {
     public double WRATH_COST = 0.088;
     
     public double THRASH_CAT_TICK_DAMAGE_PER_AP = 0.113886;
-    public double THRASH_CAT_INITIAL_DAMAGE_PER_AP = 1.4 * THRASH_CAT_TICK_DAMAGE_PER_AP;    
+    public double THRASH_CAT_INITIAL_TICK_MOD = 1.4;    
     public int THRASH_CAT_ENERGY_COST = 50;
     public int THRASH_CAT_FREQUENCY = 3000;
     public int THRASH_CAT_DURATION = 15000;
@@ -58,7 +63,7 @@ public class FeralGameData {
     public int THRASH_BEAR_DURATION = 16000;
     
     public int CAT_MASTERY_RATING_OFFSET = 880;
-    public double CAT_MASTERY_RATING_PER_UNIT = 3514.5;
+    public double CAT_MASTERY_RATING_PER_MOD = 3514.5;
     
     public double BT_DAMAGE_MOD = 1.3;
     public int BT_CHARGES = 2;
@@ -102,6 +107,10 @@ public class FeralGameData {
     public int DASH_DURATION = 3 * 60000;
     public int DASH_GLYPH_DURATION_REDUCTION = 60000;
     
+    public int FF_DURATION = 6000;
+    public int FF_COOLDOWN = 30000;
+    public double FF_BEAR_DAMAGE_PER_AP = 0.325;
+    
     public int SOTF_ENERGY_PER_COMBO = 4;
     
     public double SHRED_SWIPE_BLEED_BONUS = 1.2;
@@ -120,6 +129,7 @@ public class FeralGameData {
     
     public int HOTW_DURATION = 45000;
     public int HOTW_COOLDOWN = 6 * 60000;
+    public double HOTW_SPELL_POWER_MOD = 4.2; // +320%
     
     public int STAMP_ROAR_DURATION = 80000;
     public int STAMP_ROAR_COOLDOWN = 2 * 60000;
@@ -127,10 +137,15 @@ public class FeralGameData {
     public double STAMP_ROAR_SPEED_BONUS = 1.6;
     public int STAMP_ROAR_GLYPH_RADIUS = 40;
 
+    public double BONUS_T13_BITW_PERC = 0.60;
+    
+    public double BONUS_T14_2PC_SHRED_DAMAGE_MOD = 1.05;
+    public int BONUS_T14_4PC_DURATION_INCREASE = 4000;
+    
     public double BONUS_T15_2PC_CHANCE_PER_CP = 0.15;
     public int BONUS_T15_2PC_CP_GAIN = 1;
     
-    public double BONUS_T15_4PC_CRIT = 0.4;
+    public double BONUS_T15_4PC_EXTRA_CRIT = 0.4;
     public int BONUS_T15_4PC_DURATION = 30000;
     public int BONUS_T15_4PC_CHARGES = 3;
     
@@ -140,7 +155,12 @@ public class FeralGameData {
     public int BONUS_T16_4PC_CP_GAIN = 3;
     public int BONUS_T16_4PC_DURATION = 12000;
     
+    public double BONUS_T17_4PC_EXTRA_BLEED_COEFF = 0.15;
+    public int BONUS_T17_4PC_FREQUENCY = 2000; // guess?
+    public int BONUS_T17_4PC_DURATION = 6000;
+    
     public int BONUS_WOD_PVP_4PC_DURATION = 6000;
+    public double BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD = 1.1;
     
     
 }

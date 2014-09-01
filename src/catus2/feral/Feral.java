@@ -5,12 +5,15 @@ import catus2.EnumHelp;
 import catus2.GameHelp;
 import catus2.ModMap;
 import catus2.OriginT;
+import catus2.PlayerUnit;
 import catus2.SchoolT;
 import catus2.SpellId;
 import catus2.Unit;
+import catus2.UnitPerc;
+import catus2.UnitStat;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
-import catus2.buffs.ProductBuff;
+import catus2.buffs.ModBuff;
 import catus2.chance.ChanceFactory;
 import catus2.chance.PPM;
 import catus2.chance.Probability;
@@ -23,6 +26,7 @@ import catus2.feral.finishers.SavageRoar;
 import catus2.feral.generators.MoonfireCat;
 import catus2.feral.generators.Rake;
 import catus2.feral.generators.Shred;
+import catus2.feral.spells.FaerieFire;
 import catus2.feral.spells.HealingTouch;
 import catus2.feral.spells.Rejuvenation;
 import catus2.feral.spells.StampedingRoar;
@@ -30,15 +34,19 @@ import catus2.feral.spells.TigersFury;
 import catus2.feral.talents.Incarnation;
 import catus2.procs.Trigger;
 
-public class Feral extends Unit<FeralView> {
+public class Feral extends PlayerUnit<Feral,FeralView> {
     
     public FeralConfig cfg;
     public FeralGameData fgd;
     
     // buffs/debuffs
+    public final BuffModel buffModel_stampRoar = new BuffModel(SpellId.Druid.STAMPEDING_ROAR);
     public final BuffModel buffModel_rejuv = new BuffModel(SpellId.Druid.REJUV);
     public final BuffModel buffModel_mf = new BuffModel(SpellId.Druid.MF);
     public final BuffModel buffModel_mf_cat = new BuffModel(SpellId.Druid.Feral.MF);   
+    public final BuffModel buffModel_ff = new BuffModel(SpellId.Druid.FF);
+    
+    // bonuses
     public final BuffModel buffModel_pvp_wod_4pc = new BuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC);
     
     // bleeds
@@ -66,34 +74,64 @@ public class Feral extends Unit<FeralView> {
             //case BEAR:  return super.getMovementSpeed() * movementSpeed_bearForm_mods.product();
             default:    return super.getMovementSpeed();                
         }        
+    }    
+    
+    // ---
+    
+    @Override
+    public final double getParryChance() {
+        return 0;
     }
     
+    @Override
+    public final double getBlockChance() {
+        return 0;
+    }
     
+    @Override
+    public int getAP_extra() {
+        return getStat(UnitStat.AGI, 0); 
+    }
+    
+    @Override
+    public int getSP_extra(int schoolIndex) {
+        return super.getSP_extra(schoolIndex) + (schoolIndex == SchoolT.Idx.NATURE ? getStat(UnitStat.AGI, 0) : 0);
+    }
+    
+    // ---
+    
+    /*
+    Weapon Damage values on all weapons have been reduced by 50%.
+    Attack Power now increases Weapon Damage at a rate of 1 DPS per 3.5 Attack Power (up from 1 DPS per 14 Attack Power).
+    Attack Power, Spell Power, or Weapon Damage now affect the entire healing or damage throughput of player spells.
+    */
     public double getNormalizedWeaponDamage() {
         return 1 + getAP() / 14D; // + weaponDPS, +weaponDmg
     }
     
     public double getRazorClawsMod() {
-        return 1 + (fgd.CAT_MASTERY_RATING_OFFSET + getMasteryRating()) / fgd.CAT_MASTERY_RATING_PER_UNIT;
+        return 1 + (fgd.CAT_MASTERY_RATING_OFFSET + getMasteryRating()) / fgd.CAT_MASTERY_RATING_PER_MOD;
     }
     
-    public void applyRakeTick(Unit target, double mod) {
+    // ---
         
+    public void breakRootsAndSnares() {
+        // duh
     }
-    
-    public void applyRipTick(Unit target, double mod) {
-        
-        
-        
-    }
-    
-    
     
     public void refundEnergyCost(int cost) {
         if (!cfg.disable_refunds) {
             power_energy.add(GameHelp.round(fgd.PP_REFUND_MOD * cost));
         }
     }
+    
+    public void applySavageRoarGlyph() {
+        if (cfg.glyph_savageRoar && isProwling()) {
+            spell_sr.activateWithCombos(5);                
+        }
+    }
+    
+    // --- 
     
     // Tiger's Fury
     // http://wow.wowhead.com/spell=138358
@@ -109,7 +147,14 @@ public class Feral extends Unit<FeralView> {
     // http://www.wowhead.com/spell=146874
     // After using Tiger's Fury, your next finishing move will restore 3 combo points on your current target after being used.
     public final Buff buff_bonus_t16_4pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T16_4PC_BUFF), selfView);
-
+    
+    public final Buff buff_lotp = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.LOTP), selfView) {
+        // do later
+        // idea:
+        // auras have infinite range
+        // auras are stored in a party/raid object
+    };
+    
     public final Buff buff_ooc = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.OOC), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {
@@ -124,18 +169,24 @@ public class Feral extends Unit<FeralView> {
     public final Buff buff_bt = new Buff(new BuffModel(SpellId.Druid.Feral.BT), selfView);    
     public final Buff buff_ps = new Buff(new BuffModel(SpellId.Druid.Feral.PS_BUFF), selfView);
     public final Buff buff_prowl = new Buff(new BuffModel(SpellId.Druid.PROWL), selfView);
-    public final Buff buff_hotw = new Buff(new BuffModel(SpellId.Druid.Feral.HOTW), selfView);
+    public final Buff buff_hotw = new Buff(new BuffModel(SpellId.Druid.Feral.HOTW), selfView) {
+        @Override
+        public void gotActivated(boolean refreshed) {
+            v.o.spellPower_product.set(m.id, fgd.HOTW_SPELL_POWER_MOD);
+        }
+        @Override
+        public void gotDeactivated() {
+            v.o.spellPower_product.remove(m.id);
+        }
+    };
     
-    public final ProductBuff buff_si = new ProductBuff(new BuffModel(SpellId.Druid.SI), selfView, damageRecv_all_mod);    
-    public final ProductBuff buff_berserk_cat = new ProductBuff(new BuffModel(SpellId.Druid.BERSERK_CAT), selfView, power_energy.costMods);
-    
-    
-    // ---
+    public final ModBuff buff_si = new ModBuff(new BuffModel(SpellId.Druid.SI), selfView, damageRecv_all_product);    
+    public final ModBuff buff_berserk_cat = new ModBuff(new BuffModel(SpellId.Druid.BERSERK_CAT), selfView, power_energy.costMods);
         
     // ---
     
-    
     // this manages the underlying form
+    // fix me
     
     public FeralFormT currentForm;    
     public void cancelForm() { setForm(FeralFormT.HUMAN); }    
@@ -153,6 +204,8 @@ public class Feral extends Unit<FeralView> {
             currentForm = form;
         }
     }
+    
+    // ---
     
     public boolean isProwling() {
         return buff_prowl.isActive();
@@ -174,12 +227,6 @@ public class Feral extends Unit<FeralView> {
         return false;
     }
      
-    public void applySavageRoarGlyph() {
-        if (cfg.glyph_savageRoar && isProwling()) {
-            spell_sr.activateWithCombos(5);                
-        }
-    }
-    
     // --- 
     
     public double getBloodtalonsMod(boolean bt) {
@@ -202,10 +249,6 @@ public class Feral extends Unit<FeralView> {
     }
     */
     
-    public double getSR_damageMod() {
-        return cfg.glyph_savagery ? fgd.SR_GLYPH_DAMAGE_MOD : buff_sr.isActive() ? fgd.SR_DAMAGE_MOD : 1;
-    }
-     
     public final Buff<BuffModel,Feral,FeralView> buff_dash = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.CAT_FORM), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {
@@ -214,7 +257,7 @@ public class Feral extends Unit<FeralView> {
         }
         @Override
         public void gotDeactivated() {
-            v.o.movementSpeed_cat_sum.clear(m.id);
+            v.o.movementSpeed_cat_sum.remove(m.id);
         }
     };
     
@@ -227,7 +270,7 @@ public class Feral extends Unit<FeralView> {
         @Override
         public void gotDeactivated() {
             v.o.breakRootsAndSnares();
-            v.o.movementSpeed_cat_sum.clear(m.id);
+            v.o.movementSpeed_cat_sum.remove(m.id);
         }
     };
     
@@ -252,11 +295,6 @@ public class Feral extends Unit<FeralView> {
         }
     };
     
-    public void breakRootsAndSnares() {
-        // clear roots
-    }
-    
-    
     // generators
     public final Shred spell_shred = new Shred(this);
     public final Rake spell_rake = new Rake(this);
@@ -278,9 +316,8 @@ public class Feral extends Unit<FeralView> {
     
     // cat stuff    
     public final TigersFury spell_tf = new TigersFury(this);
+    public final FaerieFire spell_ff = new FaerieFire(this);
     public final ActivatorSpell spell_berserk_cat = new ActivatorSpell(buff_berserk_cat);
-    
-    // spells
     public final StampedingRoar spell_stampRoar = new StampedingRoar(this);
     public final ActivatorSpell spell_si = new ActivatorSpell(buff_si);
     public final ActivatorSpell spell_dash = new ActivatorSpell(buff_dash);
@@ -289,8 +326,8 @@ public class Feral extends Unit<FeralView> {
     public final Incarnation spell_kotj = new Incarnation(this);
     
     // forms
-    public final ActivatorSpell spell_form_cat = new ActivatorSpell(buff_form_cat);
-    public final ActivatorSpell spell_form_bear = new ActivatorSpell(buff_form_cat);
+    public final ActivatorSpell spell_catForm = new ActivatorSpell(buff_form_cat);
+    public final ActivatorSpell spell_bearForm = new ActivatorSpell(buff_form_cat);
     
     // procs
     
@@ -310,35 +347,67 @@ public class Feral extends Unit<FeralView> {
     
     // -- 
     
-    public double BITW_PERC;
+    @Override
+    public void prepareForCombat() {
+        super.prepareForCombat();
+        
+        perc_sum[UnitPerc.CRIT].set(SpellId.Agi.CRITICAL_STRIKES, fgd.CRITICAL_STRIKES_CRIT_BONUS);
+        perc_rating_product[UnitPerc.CRIT].set(SpellId.Druid.Feral.SHARPENED_CLAWS, fgd.SHARPENED_CLAWS_CRIT_MOD);
+        
+        stat_product[UnitStat.AGI].set(SpellId.Druid.Feral.LEATHER_SPECIALIZATION, fgd.LEATHER_SPECIALIZATION_AGI_MOD);
+        
+        if (!cfg.disable_racials) {
+            if (cfg.racial_ne) {
+                if (world.nightTime) {
+                    perc_sum[UnitPerc.HASTE].set(SpellId.Racial.TOUCH_OF_ELUNE_NIGHT, fgd.RACIAL_TOUCH_OF_ELUNE_PERC_BONUS);
+                } else {
+                    perc_sum[UnitPerc.CRIT].set(SpellId.Racial.TOUCH_OF_ELUNE_DAY, fgd.RACIAL_TOUCH_OF_ELUNE_PERC_BONUS);
+                }
+            }
+            if (cfg.racial_tauren) {
+                
+            }
+        }
+        
+
+    }
     
-    public void setup() {
-        
+    public double BITW_PERC;
+    public boolean hasArmorSpecialization;
+    
+    public void setup() {        
         triggerList.clear();
+     
+        BITW_PERC = cfg.bonus_t13_2pc ? fgd.BONUS_T13_BITW_PERC : fgd.BITW_PERC; 
         
-        BITW_PERC = fgd.BITW_PERC; // changed by t13
-        
-        buff_si.mod = cfg.glyph_si ? fgd.SI_GLYPH_DAMAGE_MOD : fgd.SI_DAMAGE_MOD;        
+        buff_si.m.param = cfg.glyph_si ? fgd.SI_GLYPH_DAMAGE_MOD : fgd.SI_DAMAGE_MOD;        
         spell_si.defaultRechargeTime = fgd.SI_RECHARGE - (cfg.glyph_si ? fgd.SI_GLYPH_RECHARGE_REDUCTION : 0);
 
         spell_dash.defaultCooldownTime = fgd.DASH_DURATION - (cfg.glyph_dash ? fgd.DASH_GLYPH_DURATION_REDUCTION : 0);
         
+        buffModel_rip.default_duration = fgd.RIP_DURATION + (cfg.bonus_t14_4pc ? fgd.BONUS_T14_4PC_DURATION_INCREASE : 0);
+        
+        spell_stampRoar.range_max = cfg.glyph_stampRoar ? fgd.STAMP_ROAR_GLYPH_RADIUS : fgd.STAMP_ROAR_RADIUS;
+        
         if (cfg.glyph_savagery) {
+            buff_sr.m.param = fgd.SR_GLYPH_DAMAGE_MOD;
             buff_sr.m.default_duration = 0;
-            buff_sr.activate();
-            spell_sr.enabled = false;
+            buff_sr.m.passive = true;
         } else {
-            spell_sr.enabled = true;
+            buff_sr.m.param = fgd.SR_DAMAGE_MOD;
+            buff_sr.m.passive = false;
         }
         
-        if (cfg.disable_ooc) {
-            triggerList.remove(trigger_ooc);
-        } else {
+        buff_ooc.m.enabled = !cfg.disable_ooc;
+        buff_lotp.m.enabled = !cfg.disable_lotp;
+        
+        if (!cfg.disable_ooc) {
             triggerList.add(trigger_ooc);
         }
         
-        
-        
+        if (!cfg.disable_lotp) {
+            triggerList.add(trigger_lotp);
+        }
         
     }
     
@@ -347,6 +416,10 @@ public class Feral extends Unit<FeralView> {
         super.init();
         
         buff_dash.m.default_duration = fgd.DASH_DURATION;
+        
+        buffModel_ff.unique = true;
+        buffModel_ff.default_duration = fgd.FF_DURATION;
+        spell_ff.defaultCooldownTime = fgd.FF_COOLDOWN;
         
         buffModel_rejuv.base_frequency = fgd.REJUV_FREQUENCY;
         buffModel_rejuv.default_duration = fgd.REJUV_DURATION;
@@ -365,24 +438,27 @@ public class Feral extends Unit<FeralView> {
         
         buffModel_rip.base_frequency = fgd.RIP_FREQUENCY;
         buffModel_rip.default_duration = fgd.RIP_DURATION;        
-        buffModel_rip.scaling = fgd.RIP_TICK_DAMAGE_PER_AP;
+        buffModel_rip.param = fgd.RIP_TICK_DAMAGE_PER_AP;
         buffModel_rip.pandemic = true;
         
         buffModel_rake.base_frequency = fgd.RAKE_FREQUENCY;
         buffModel_rake.default_duration = fgd.RAKE_DURATION;
-        buffModel_rake.scaling = fgd.RAKE_TICK_DAMAGE_PER_AP;
+        buffModel_rake.param = fgd.RAKE_TICK_DAMAGE_PER_AP;
         buffModel_rake.pandemic = true;
         
         buffModel_thrash_cat.base_frequency = fgd.THRASH_CAT_FREQUENCY;
         buffModel_thrash_cat.default_duration = fgd.THRASH_CAT_DURATION;
         buffModel_thrash_cat.pandemic = true;
-        buffModel_thrash_cat.scaling = fgd.THRASH_CAT_TICK_DAMAGE_PER_AP;     
+        buffModel_thrash_cat.param = fgd.THRASH_CAT_TICK_DAMAGE_PER_AP;     
         
         buffModel_thrash_bear.base_frequency = fgd.THRASH_BEAR_FREQUENCY;
         buffModel_thrash_bear.default_duration = fgd.THRASH_BEAR_DURATION;
         buffModel_thrash_bear.pandemic = true;
-        buffModel_thrash_bear.scaling = fgd.THRASH_BEAR_TICK_DAMAGE_PER_AP;     
+        buffModel_thrash_bear.param = fgd.THRASH_BEAR_TICK_DAMAGE_PER_AP;     
         
+        buffModel_stampRoar.default_duration = fgd.STAMP_ROAR_DURATION;
+        buffModel_stampRoar.unique = true;
+        buffModel_stampRoar.param = fgd.STAMP_ROAR_SPEED_BONUS;        
         
         buff_bt.m.setCharges(fgd.BT_CHARGES);
         buff_bt.m.default_duration = fgd.BT_DURATION;
@@ -398,7 +474,7 @@ public class Feral extends Unit<FeralView> {
                 
         buff_form_kotj.m.default_duration = fgd.KOTJ_DURATION;   
         
-        spell_form_cat.setManaCost(fgd.CAT_FORM_MANA_COST);
+        spell_catForm.setManaCost(fgd.CAT_FORM_MANA_COST);
                
         buff_si.m.default_duration = fgd.SI_DURATION;
         spell_si.defaultCooldownTime = fgd.SI_DURATION;
