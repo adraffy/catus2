@@ -1,16 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2.feral.spells;
 
+import catus2.OriginT;
 import catus2.feral.Feral;
 import catus2.SchoolT;
 import catus2.TargetStyle;
 import catus2.Unit;
-
 
 public class HealingTouch extends FeralSpell {
 
@@ -42,7 +36,7 @@ public class HealingTouch extends FeralSpell {
     
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        double heal = o.getSP(SchoolT.NATURE) * o.fgd.HT_HEALING_PER_SP;    
+        double heal = o.getSP(SchoolT.Idx.NATURE) * o.fgd.HT_HEALING_PER_SP;  // what kind of range is this?   
         if (o.buff_ps.tryConsume()) {
             heal *= o.fgd.PS_HT_HEALING_MOD;
         }         
@@ -50,9 +44,10 @@ public class HealingTouch extends FeralSpell {
         if (o.cfg.talent_doc) {
             heal *= o.fgd.DOC_HT_REJUV_HEAL_MOD;
         } 
-        o.applyHealTo(o.currentTarget.unit, this, SchoolT.NATURE, o.world.randomChance(crit), heal);
-        if (o.currentTarget.unit != o) {
-            o.applyHealTo(o, this, SchoolT.NATURE, o.world.randomChance(crit), heal);
+        double multi = o.getMultistrikeChance();
+        o.applyHeal(heal, target, this, OriginT.HEAL, SchoolT.SCHOOLS_NATURE, crit, multi);
+        if (o != target) {
+            o.applyHeal(heal, o, this, OriginT.HEAL, SchoolT.SCHOOLS_NATURE,crit, multi);
         }           
         if (o.cfg.talent_bt) {
             o.buff_bt.activate();

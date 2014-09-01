@@ -1,17 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2.feral;
 
-import catus2.GameHelp;
-
-/**
- *
- * @author raffy
- */
 public class FeralGameData {
     
     public double PP_REFUND_MOD = 0.8; // primal precision, refund on miss
@@ -21,8 +9,8 @@ public class FeralGameData {
     public int OOC_DURATION = 15000;
     public double OOC_PPM = 3.5;
 
-    public int FB_ENERGY_COST = GameHelp.energy(25);
-    public int FB_EXTRA_COST = GameHelp.energy(25);
+    public int FB_ENERGY_COST = 25;
+    public int FB_EXTRA_COST = 25;
     public double FB_DAMAGE_PER_AP = 3;
     public double FB_EXTRA_DAMAGE_MOD_PER_ENERGY = 0.04;
     public double FB_GLYPH_PERC_HEALTH_PER_ENERGY = 0.0015;
@@ -33,16 +21,16 @@ public class FeralGameData {
     public double LOTP_PERC_HEALTH = 0.03;
     public int LOTP_COOLDOWN = 6000;
        
-    public int SHRED_ENERGY_COST = GameHelp.energy(40);
+    public int SHRED_ENERGY_COST = 40;
     public double SHRED_DAMAGE_PER_DPS = 2.94;
     public double SHRED_STEALTH_DAMAGE_MOD = 1.35;    
     
-    public int RAKE_ENERGY_COST = GameHelp.energy(35);
+    public int RAKE_ENERGY_COST = 35;
     public double RAKE_TICK_DAMAGE_PER_AP = 0.475;
     public int RAKE_DURATION = 15;
     public int RAKE_FREQUENCY = 3000;
     
-    public int MF_CAT_ENERGY_COST = GameHelp.energy(30);
+    public int MF_CAT_ENERGY_COST = 30;
     public int MF_CAT_FREQUENCY = 2000;    
     public int MF_CAT_DURATION = 14000;
     
@@ -50,7 +38,7 @@ public class FeralGameData {
     public int MF_DURATION = 20;
     public int MF_FREQUENCY = 3000;
     
-    public int RIP_ENERGY_COST = GameHelp.energy(30);
+    public int RIP_ENERGY_COST = 30;
     public double RIP_TICK_DAMAGE_PER_AP = 0.1;
     public int RIP_DURATION = 24;
     public int RIP_FREQUENCY = 2000;
@@ -60,7 +48,7 @@ public class FeralGameData {
     
     public double THRASH_CAT_TICK_DAMAGE_PER_AP = 0.113886;
     public double THRASH_CAT_INITIAL_DAMAGE_PER_AP = 1.4 * THRASH_CAT_TICK_DAMAGE_PER_AP;    
-    public int THRASH_CAT_ENERGY_COST = GameHelp.energy(50);
+    public int THRASH_CAT_ENERGY_COST = 50;
     public int THRASH_CAT_FREQUENCY = 3000;
     public int THRASH_CAT_DURATION = 15000;
     
@@ -79,7 +67,7 @@ public class FeralGameData {
     public double TF_DAMAGE_MOD = 1.15;
     public int TF_DURATION = 8000;
     public int TF_COOLDOWN = 30000;
-    public int TF_ENERGY_BONUS = GameHelp.energy(60);
+    public int TF_ENERGY_BONUS = 60;
         
     public int SI_CHARGES = 2;
     public int SI_DURATION = 12000;
@@ -110,11 +98,11 @@ public class FeralGameData {
             
     public double TRAVEL_FORM_MANA_COST = 0.056;
     
-    public int SOTF_ENERGY_PER_COMBO = GameHelp.energy(4);
+    public int SOTF_ENERGY_PER_COMBO = 4;
     
     public double SHRED_SWIPE_BLEED_BONUS = 1.2;
     
-    public int SWIPE_ENERGY_COST = GameHelp.energy(45);
+    public int SWIPE_ENERGY_COST = 45;
     public double SWIPE_DAMAGE_MOD = 1.35;
    
     public int KOTJ_DURATION = 30000;
@@ -122,10 +110,9 @@ public class FeralGameData {
         
     public int SR_DURATION_BASE = 12000;
     public int SR_DURATION_PER_COMBO = 6000;
-    //int SR_ALIGNMENT = 3 * 1000;
-    public int SR_ENERGY_COST = GameHelp.energy(25);
-    double SR_DAMAGE_MOD = 1.4;
-    double SR_GLYPH_DAMAGE_MOD = 1.35;
+    public int SR_ENERGY_COST = 25;
+    public double SR_DAMAGE_MOD = 1.4;
+    public double SR_GLYPH_DAMAGE_MOD = 1.35;
     
     public int HOTW_DURATION = 45000;
     public int HOTW_COOLDOWN = 6 * 60000;

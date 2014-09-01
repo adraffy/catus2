@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2.feral.generators;
 
 import catus2.feral.generators.CatGenerator;
@@ -14,10 +8,6 @@ import catus2.feral.Feral;
 import catus2.Unit;
 import catus2.feral.FeralView;
 
-/**
- *
- * @author raffy
- */
 public class Shred extends CatGenerator {
 
     public Shred(Feral owner) {

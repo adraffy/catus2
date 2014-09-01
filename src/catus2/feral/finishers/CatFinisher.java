@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2.feral.finishers;
 
 import catus2.feral.Feral;
@@ -11,10 +5,6 @@ import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.spells.FeralSpell;
 
-/**
- *
- * @author raffy
- */
 public abstract class CatFinisher extends FeralSpell {
 
     public CatFinisher(Feral owner, TargetStyle targetStyle) {

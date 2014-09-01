@@ -1,17 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2;
 
 import java.util.Arrays;
 
-/**
- *
- * @author raffy
- */
 public class ProductMap {
     
     static final int INIT_CAP = 5;

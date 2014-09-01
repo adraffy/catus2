@@ -22,13 +22,11 @@ import catus2.feral.finishers.SavageRoar;
 import catus2.feral.generators.MoonfireCat;
 import catus2.feral.generators.Rake;
 import catus2.feral.generators.Shred;
-import catus2.feral.spells.BerserkCat;
 import catus2.feral.spells.HealingTouch;
 import catus2.feral.spells.Rejuvenation;
 import catus2.feral.spells.StampedingRoar;
 import catus2.feral.spells.TigersFury;
 import catus2.feral.talents.Incarnation;
-import catus2.procs.BuffTrigger;
 import catus2.procs.Trigger;
 
 public class Feral extends Unit<FeralView> {
@@ -251,18 +249,18 @@ public class Feral extends Unit<FeralView> {
     
     // cat stuff    
     public final TigersFury spell_tf = new TigersFury(this);
-    public final BerserkCat spell_berserk_cat = new BerserkCat(this);
+    public final ActivatorSpell spell_berserk_cat = new ActivatorSpell(buff_berserk_cat);
     
     // spells
     public final StampedingRoar spell_stampRoar = new StampedingRoar(this);
-    public final ActivatorSpell<Feral,FeralView,FeralBuff<?>> spell_si = new ActivatorSpell(buff_si);
+    public final ActivatorSpell spell_si = new ActivatorSpell(buff_si);
     
     // talents?
     public final Incarnation spell_kotj = new Incarnation(this);
     
     // forms
-    public final ActivatorSpell<Feral,FeralView,FeralBuff<?>> spell_form_cat = new ActivatorSpell<>(buff_form_cat);
-    public final ActivatorSpell<Feral,FeralView,FeralBuff<?>> spell_form_bear = new ActivatorSpell<>(buff_form_cat);
+    public final ActivatorSpell spell_form_cat = new ActivatorSpell(buff_form_cat);
+    public final ActivatorSpell spell_form_bear = new ActivatorSpell(buff_form_cat);
     
     // procs
     

@@ -1,23 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2;
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 import java.util.Random;
 
-/**
- *
- * @author raffy
- */
 public class World {
    
     // world-config
     
+    public boolean nightTime; // 1% haste at night, 1% crit at day
     public double pandemicCoeff = 1.3;
     public double multistrikeDamageMod = 0.3;
     public boolean randomDamageRanges = true;
@@ -34,7 +24,7 @@ public class World {
     public int GCD_FLOOR = 1000;
     public int GCD_SPELL = 1500;
     //public int GCD_ENERGY = 1000;
-    //public int GCD_SHAPESHIFT = 1000;
+    //public int GCD_SHAPESHIFT = 1500;
     
     // ---
     

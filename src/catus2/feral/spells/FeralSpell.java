@@ -1,10 +1,8 @@
 package catus2.feral.spells;
 
 import catus2.AbstractSpell;
-import catus2.GameHelp;
 import catus2.TargetStyle;
 import catus2.feral.Feral;
-import catus2.feral.FeralView;
 
 public abstract class FeralSpell extends AbstractSpell<Feral> {
 

@@ -1,21 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package catus2.feral;
 
-/**
- *
- * @author raffy
- */
 public class FeralConfig {
     
-    boolean ignore_location;
+    public boolean ignore_location;
     
-    boolean disable_racials;
-    boolean nightTime; // 1% haste at night, 1% crit at day
+    public boolean disable_racials;
 
     // bonuses
     public boolean bonus_t13_2pc;
