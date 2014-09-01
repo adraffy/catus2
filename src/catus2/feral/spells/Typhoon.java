@@ -15,11 +15,14 @@ public class Typhoon extends AbstractSpell {
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
         UnitList list = o.world.retainUnitList();
-        o.collectUnits(list, true, o.world_x, o.world_y, 0, 15, o.world_dir, GameHelp.HALF_PI);
-        for (Unit unit: list) {            
-            //u.applyKnockback(5);            
+        try {
+            o.collectUnits(list, true, o.world_x, o.world_y, 0, 15, o.world_dir, GameHelp.HALF_PI);
+            for (Unit unit: list) {            
+                //u.applyKnockback(5);            
+            }
+        } finally {
+            o.world.releaseUnitList(list);
         }
-        o.world.releaseUnitList(list);
     }
     
 }

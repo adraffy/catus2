@@ -6,10 +6,17 @@ public class Power {
     int maximum;
     public int current;  
     
-    public final ProductMap costMods = new ProductMap();
+    public final ModMap costMods = new ModMap(true); // no idea
     
     public int percentOfBase(double perc) {
         return (int)(perc * base);
+    }
+    
+    public void set(int amt) {
+        if (amt < 0) {
+            throw new IllegalStateException();
+        }
+        current = Math.min(amt, maximum);
     }
     
     public int add(int amt) {
@@ -19,7 +26,7 @@ public class Power {
     }
     
     public int adjust(int amt) {
-        return (int)(costMods.product() * amt + 0.5);
+        return (int)(costMods.fold() * amt + 0.5);
     }
     
     

@@ -1,5 +1,6 @@
 package catus2;
 
+import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 import catus2.buffs.ProductBuff;
 import catus2.procs.Trigger;
@@ -8,23 +9,38 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public abstract class Unit<V extends AbstractView<? extends Unit>> {
+   
+    public final ModMap movementSpeed_sum = new ModMap(false);
+    public final ModMap damageRecv_all_mod = new ModMap(true);
+    public final ModMap[] damageRecv_school_product;
+    public final ModMap[] damageDone_school_product;
+    public final ModMap healingRecv_all_product = new ModMap(true);
+    public final ModMap healingDone_all_product = new ModMap(true);
+    public final ModMap[] stat_product;
     
-    public final ProductMap damageTakenMod = new ProductMap();
-    public final ProductMap[] damageDoneMods = new ProductMap[SchoolT.NUM];
     
     public final ArrayList<Trigger> triggerList = new ArrayList<>();
     
-    public final V selfView = createView(this);    
+    public final V selfView = _createView(this);    
     
     public Unit() {
-        createStacks();        
-    }
-    
-    private void createStacks() {
-        for (int i = 0; i < SchoolT.NUM; i++) {
-            damageDoneMods[i] = new ProductMap();
+        int schoolCount = SchoolT.NUM;
+        damageDone_school_product = new ModMap[schoolCount];    
+        damageRecv_school_product = new ModMap[schoolCount];
+        for (int i = 0; i < schoolCount; i++) {
+            damageDone_school_product[i] = new ModMap(true);
+            damageRecv_school_product[i] = new ModMap(true);
+        }  
+        stat_product = new ModMap[3];        
+        for (int i = 0; i < stat_product.length; i++) {
+            stat_product[i] = new ModMap(true);
         }
     }
+    
+    public final HashMap<Integer,Buff> uniqueBuffMap = new HashMap<>(); 
+
+  
+    
     
     int faction;
     
@@ -228,7 +244,7 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
         for (int i = 0; i < SchoolT.NUM && schoolMask > 0; i++) {
             int bit = 1 << i;
             if ((bit & schoolMask) == bit) {
-                mod *= damageDoneMods[i].product();
+                mod *= damageDone_school_product[i].fold();
             }            
         }
         return mod;
@@ -236,19 +252,18 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
     
     // --
     
-    public final ProductMap movementSpeedMods = new ProductMap();
-    
     public double getMovementSpeed() {
-        return movementSpeedMods.product();
+        return movementSpeed_sum.fold();
     }
     
-    public final ProductBuff buff_stampRoar = new ProductBuff(new BuffModel(SpellId.Druid.STAMPEDING_ROAR), selfView, movementSpeedMods);
+    public final ProductBuff buff_stampRoar = new ProductBuff(new BuffModel(SpellId.Druid.STAMPEDING_ROAR), selfView, movementSpeed_sum);
     
     /*
     public boolean hasMovementSpeed(int id) {
         return movementSpeed_mods.contains(id);
     }
     */
+    
     
     
     public int getMasteryRating() {
@@ -339,7 +354,8 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
         
     }
     
-    
+    // these args suck...
+    // need access to crit
     public void applyDamage(double damage, Unit target, Object source, OriginT origin, int schoolMask, boolean crit) {
         applyDamage(damage, target, source, origin, schoolMask, crit, getMultistrikeChance(), true);
     }
@@ -376,6 +392,7 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
     public final Power power_combos = new Power();
     public final Power power_energy = new Power();
     public final Power power_mana = new Power();
+    public final Power power_rage = new Power();
     
     // -------
     
@@ -389,13 +406,13 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
     
     private final HashMap<Unit,V> viewMap = new HashMap<>();
     
-    public abstract V createView(Unit actor);
+    protected abstract V _createView(Unit actor); // do not call this function
     
-    public V getUnitData(Unit actor) {
-        V temp = viewMap.get(actor);
+    public V getView(Unit unit) {
+        V temp = viewMap.get(unit);
         if (temp == null) {
-            temp = createView(actor);
-            viewMap.put(actor, temp);
+            temp = _createView(unit);
+            viewMap.put(unit, temp);
         }
         return temp;        
     }

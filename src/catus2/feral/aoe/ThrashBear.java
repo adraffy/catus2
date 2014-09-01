@@ -13,7 +13,7 @@ public class ThrashBear extends FeralSpell {
 
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // wut
     }
     
 }

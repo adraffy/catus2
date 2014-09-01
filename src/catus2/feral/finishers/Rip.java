@@ -16,7 +16,7 @@ public class Rip extends CatFinisher.Offensive {
         AttackT atk = o.yellow_melee(target, 0);
         boolean bt = o.buff_bt.tryConsume();
         if (atk.landed) {            
-            FeralBleed bleed = o.getUnitData(target).dot_rip;    
+            FeralBleed bleed = o.getView(target).dot_rip;    
             bleed.snapshot = o.getBloodtalonsMod(bt) * o.getSnapshotableDamageMod() * o.power_combos.getPercent();
             bleed.activate();
         }             

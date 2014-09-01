@@ -16,7 +16,8 @@ public class SpellId {
         static public final int HT = 5185;        
         static public final int SI = 61336;        
         static public final int PROWL = 5215;        
-        static public final int LOTP = 17007;        
+        static public final int LOTP = 17007;    
+        static public final int FF = 770;
         static public class Feral {
             static public final int TF = 5217;    
             static public final int SR = 62071;    

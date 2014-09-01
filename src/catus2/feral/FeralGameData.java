@@ -73,10 +73,9 @@ public class FeralGameData {
     public int SI_DURATION = 12000;
     public int SI_RECHARGE = 2 * 60000;
     public double SI_DAMAGE_MOD = 0.5;    
-    public int SI_GLYPH_RECHARGE = 80000;
+    public int SI_GLYPH_RECHARGE_REDUCTION = 40000;
     public double SI_GLYPH_DAMAGE_MOD = 0.4;
-    
-   
+       
     public int PS_DURATION = 12000;
     public double PS_CHANCE_PER_CP = 0.2;    
     public double PS_HT_HEALING_MOD = 1.5;
@@ -95,8 +94,13 @@ public class FeralGameData {
     public double CAT_FORM_SPEED_BONUS = 0.3;
     
     public double BEAR_FORM_MANA_COST = 0.037;
+    public int BEAR_FORM_RAGE = 10;
             
     public double TRAVEL_FORM_MANA_COST = 0.056;
+    
+    public double DASH_SPEED_BONUS = 0.7;
+    public int DASH_DURATION = 3 * 60000;
+    public int DASH_GLYPH_DURATION_REDUCTION = 60000;
     
     public int SOTF_ENERGY_PER_COMBO = 4;
     
@@ -120,7 +124,7 @@ public class FeralGameData {
     public int STAMP_ROAR_DURATION = 80000;
     public int STAMP_ROAR_COOLDOWN = 2 * 60000;
     public int STAMP_ROAR_RADIUS = 10;
-    public double STAMP_ROAR_SPEED_MOD = 1.6;
+    public double STAMP_ROAR_SPEED_BONUS = 1.6;
     public int STAMP_ROAR_GLYPH_RADIUS = 40;
 
     public double BONUS_T15_2PC_CHANCE_PER_CP = 0.15;

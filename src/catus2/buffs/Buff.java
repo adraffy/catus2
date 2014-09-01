@@ -41,6 +41,9 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
     private void deactivate() {
         timeline().cancel(duration_fader);
         timeline().cancel(tick_fader);
+        if (m.unique) {
+            v.unit.uniqueBuffMap.remove(m.id);
+        }
         gotDeactivated();
     }
     
@@ -56,6 +59,12 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
         }
         if (duration < 0) {
             throw new IllegalStateException("Duration: " + duration);
+        }
+        if (m.unique) {
+            Buff buff = (Buff)v.unit.uniqueBuffMap.put(m.id, this); // java generics bug
+            if (buff != null && buff != this) {
+                buff.cancel();
+            }
         }
         current_stacks = stacks;
         if (current_state) {
@@ -73,13 +82,13 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
                     timeline().schedAt(duration, duration_fader);
                 }                
             }
-            gotRefreshed();
+            gotActivated(true);
         } else {            
             current_state = true;
             if (duration > 0) {
                 timeline().schedAt(duration, duration_fader);
             }          
-            gotActivated();
+            gotActivated(false);
         }     
         if (m.base_frequency > 0) {
             tick_index = 0;
@@ -129,8 +138,7 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
         timeline().schedIn((int)last_frequency, tick_fader);
     }
             
-    public void gotActivated() {}
-    public void gotRefreshed() {}
+    public void gotActivated(boolean refreshed) {}
     public void gotTick(double fraction) {}
     public void gotDeactivated() {}
     
@@ -141,7 +149,7 @@ public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O
                 ++tick_index;
                 gotTick((timeline().clock - last_clock) / last_frequency);
             }      
-            gotDeactivated();
+            deactivate();
         }        
     };
     

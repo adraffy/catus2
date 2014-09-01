@@ -4,6 +4,7 @@ public class BuffModel {
 
     public final int id;
     
+    public boolean unique; // one per unit
     public boolean pandemic;
     
     public int default_duration;

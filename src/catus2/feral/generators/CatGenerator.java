@@ -21,7 +21,7 @@ public abstract class CatGenerator extends FeralSpell {
     
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        AttackT atk = generate(o.createView(target));
+        AttackT atk = generate(o.getView(target));
         if (atk.landed) {                
             int c = 1;
             if (atk == AttackT.CRIT && !o.cfg.disable_primalFury) {

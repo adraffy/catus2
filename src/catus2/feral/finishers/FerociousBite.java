@@ -40,7 +40,7 @@ public class FerociousBite extends CatFinisher.Offensive {
             double dmg = mod * o.getBloodtalonsMod(bt) * o.getAP() * o.fgd.FB_DAMAGE_PER_AP * o.power_combos.getPercent();            
             target.applyDamage(dmg, target, this, OriginT.MELEE, SchoolT.SCHOOLS_PHYSICAL, atk == AttackT.CRIT);            
             if (target.getHealthPercent() < o.BITW_PERC) {
-                FeralBleed rip = o.getUnitData(target).dot_rip;
+                FeralBleed rip = o.getView(target).dot_rip;
                 if (rip.isActive()) {
                     rip.activate();
                 }

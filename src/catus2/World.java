@@ -28,13 +28,12 @@ public class World {
     
     // ---
     
-    public ArrayList<UnitList> unitListCache = new ArrayList<>();
-    
+    private final ArrayList<UnitList> unitListCache = new ArrayList<>();    
     public UnitList retainUnitList() {
         if (unitListCache.isEmpty()) {
             return new UnitList(unitList.size());
         } else {
-            return unitListCache.remove(unitListCache.size());
+            return unitListCache.remove(unitListCache.size() - 1);
         }
     }
     

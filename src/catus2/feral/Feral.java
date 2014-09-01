@@ -3,8 +3,8 @@ package catus2.feral;
 import catus2.ActivatorSpell;
 import catus2.EnumHelp;
 import catus2.GameHelp;
+import catus2.ModMap;
 import catus2.OriginT;
-import catus2.ProductMap;
 import catus2.SchoolT;
 import catus2.SpellId;
 import catus2.Unit;
@@ -52,17 +52,17 @@ public class Feral extends Unit<FeralView> {
     }
 
     @Override
-    public FeralView createView(Unit unit) {
+    public FeralView _createView(Unit unit) {
         return new FeralView(this, unit);
     }
         
-    public final ProductMap movementSpeedMods_catForm = new ProductMap();
+    public final ModMap movementSpeed_cat_sum = new ModMap(true);
    // public final ProductMap movementSpeed_bearForm_mods = new ProductMap();
     
     @Override
     public double getMovementSpeed() {
         switch (currentForm) {
-            case CAT:   return super.getMovementSpeed() * movementSpeedMods_catForm.product();
+            case CAT:   return super.getMovementSpeed() * movementSpeed_cat_sum.fold();
             //case BEAR:  return super.getMovementSpeed() * movementSpeed_bearForm_mods.product();
             default:    return super.getMovementSpeed();                
         }        
@@ -112,25 +112,21 @@ public class Feral extends Unit<FeralView> {
 
     public final Buff buff_ooc = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.OOC), selfView) {
         @Override
-        public void gotActivated() {
+        public void gotActivated(boolean refreshed) {
             if (v.o.cfg.bonus_t16_2pc) {
                 v.o.buff_bonus_t16_2pc.activate();
             }
-        }
-        @Override
-        public void gotRefreshed() {
-            gotActivated();
-        }        
+        }    
     };
     
     public final Buff buff_sr = new Buff(new BuffModel(SpellId.Druid.Feral.SR), selfView);        
     public final Buff buff_tf = new Buff(new BuffModel(SpellId.Druid.Feral.TF), selfView);    
     public final Buff buff_bt = new Buff(new BuffModel(SpellId.Druid.Feral.BT), selfView);    
     public final Buff buff_ps = new Buff(new BuffModel(SpellId.Druid.Feral.PS_BUFF), selfView);
-    public final Buff buff_prowl = new FeralBuff(new BuffModel(SpellId.Druid.PROWL), selfView);
+    public final Buff buff_prowl = new Buff(new BuffModel(SpellId.Druid.PROWL), selfView);
     public final Buff buff_hotw = new Buff(new BuffModel(SpellId.Druid.Feral.HOTW), selfView);
     
-    public final ProductBuff buff_si = new ProductBuff(new BuffModel(SpellId.Druid.SI), selfView, damageTakenMod);    
+    public final ProductBuff buff_si = new ProductBuff(new BuffModel(SpellId.Druid.SI), selfView, damageRecv_all_mod);    
     public final ProductBuff buff_berserk_cat = new ProductBuff(new BuffModel(SpellId.Druid.BERSERK_CAT), selfView, power_energy.costMods);
     
     
@@ -210,42 +206,53 @@ public class Feral extends Unit<FeralView> {
         return cfg.glyph_savagery ? fgd.SR_GLYPH_DAMAGE_MOD : buff_sr.isActive() ? fgd.SR_DAMAGE_MOD : 1;
     }
      
-    
-    public final FeralBuff<BuffModel> buff_form_cat = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.CAT_FORM), this) {
+    public final Buff<BuffModel,Feral,FeralView> buff_dash = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.CAT_FORM), selfView) {
         @Override
-        public void gotActivated() {            
-            v.o.shapeshifted();
-            v.o.movementSpeedMods_catForm.set(m.id, v.o.fgd.CAT_FORM_SPEED_BONUS);
-        }
-        @Override
-        public void gotRefreshed() {
-            v.o.shapeshifted();
+        public void gotActivated(boolean refreshed) {
+            v.o.buff_form_cat.activate();
+            v.o.movementSpeed_cat_sum.set(m.id, v.o.fgd.DASH_SPEED_BONUS);
         }
         @Override
         public void gotDeactivated() {
-            v.o.shapeshifted();
-            v.o.movementSpeedMods_catForm.clear(m.id);
+            v.o.movementSpeed_cat_sum.clear(m.id);
         }
     };
     
-    public final FeralBuff<BuffModel> buff_form_bear = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.BEAR_FORM), this) {
-        
+    public final Buff<BuffModel,Feral,FeralView> buff_form_cat = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.CAT_FORM), selfView) {
+        @Override
+        public void gotActivated(boolean refreshed) {            
+            v.o.breakRootsAndSnares();
+            v.o.movementSpeed_cat_sum.set(m.id, v.o.fgd.CAT_FORM_SPEED_BONUS);
+        }
+        @Override
+        public void gotDeactivated() {
+            v.o.breakRootsAndSnares();
+            v.o.movementSpeed_cat_sum.clear(m.id);
+        }
     };
     
-    public final FeralBuff<BuffModel> buff_form_kotj = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.Feral.KOTJ), this) {
+    public final Buff<BuffModel,Feral,FeralView> buff_form_bear = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.BEAR_FORM), selfView) {
         @Override
-        public void gotActivated() {            
+        public void gotActivated(boolean refreshed) {            
+            v.o.breakRootsAndSnares();
+            v.o.power_rage.set(v.o.fgd.BEAR_FORM_RAGE);
+        }
+    };
+    
+    public final Buff<BuffModel,Feral,FeralView> buff_form_kotj = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.KOTJ), selfView) {
+        @Override
+        public void gotActivated(boolean refreshed) {            
             v.o.buff_form_cat.activate();
         }
         @Override
         public void gotDeactivated() {
             if (v.o.isCatForm()) {
-                v.o.shapeshifted();
+                v.o.breakRootsAndSnares();
             }
         }
     };
     
-    public void shapeshifted() {
+    public void breakRootsAndSnares() {
         // clear roots
     }
     
@@ -276,6 +283,7 @@ public class Feral extends Unit<FeralView> {
     // spells
     public final StampedingRoar spell_stampRoar = new StampedingRoar(this);
     public final ActivatorSpell spell_si = new ActivatorSpell(buff_si);
+    public final ActivatorSpell spell_dash = new ActivatorSpell(buff_dash);
     
     // talents?
     public final Incarnation spell_kotj = new Incarnation(this);
@@ -310,16 +318,18 @@ public class Feral extends Unit<FeralView> {
         
         BITW_PERC = fgd.BITW_PERC; // changed by t13
         
-        buff_si.mod = cfg.glyph_si ? fgd.SI_GLYPH_DAMAGE_MOD : fgd.SI_DAMAGE_MOD;
-        spell_si.defaultRechargeTime = cfg.glyph_si ? fgd.SI_GLYPH_RECHARGE : fgd.SI_RECHARGE;
+        buff_si.mod = cfg.glyph_si ? fgd.SI_GLYPH_DAMAGE_MOD : fgd.SI_DAMAGE_MOD;        
+        spell_si.defaultRechargeTime = fgd.SI_RECHARGE - (cfg.glyph_si ? fgd.SI_GLYPH_RECHARGE_REDUCTION : 0);
+
+        spell_dash.defaultCooldownTime = fgd.DASH_DURATION - (cfg.glyph_dash ? fgd.DASH_GLYPH_DURATION_REDUCTION : 0);
         
         if (cfg.glyph_savagery) {
             buff_sr.m.default_duration = 0;
+            buff_sr.activate();
             spell_sr.enabled = false;
         } else {
             spell_sr.enabled = true;
         }
-        
         
         if (cfg.disable_ooc) {
             triggerList.remove(trigger_ooc);
@@ -335,6 +345,8 @@ public class Feral extends Unit<FeralView> {
     @Override
     public void init() {
         super.init();
+        
+        buff_dash.m.default_duration = fgd.DASH_DURATION;
         
         buffModel_rejuv.base_frequency = fgd.REJUV_FREQUENCY;
         buffModel_rejuv.default_duration = fgd.REJUV_DURATION;

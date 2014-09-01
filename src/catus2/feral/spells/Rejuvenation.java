@@ -23,7 +23,7 @@ public class Rejuvenation extends AbstractSpell<Feral> {
     }
     
     public void applyToUnit(Unit target) {
-        FeralView view = o.getUnitData(target);        
+        FeralView view = o.getView(target);        
         view.hot_rejuv.activate();
     } 
 

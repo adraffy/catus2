@@ -18,16 +18,19 @@ public class StampedingRoar extends AbstractSpell<Feral> {
     }
 
     @Override
-    public void casted(Unit target, double x, double y, int castTime, int powerCost) {        
-        UnitList list = o.world.retainUnitList();
-        o.collectUnits(list, false, o.world_x, o.world_y, o.cfg.glyph_stampRoar ? o.fgd.STAMP_ROAR_GLYPH_RADIUS : o.fgd.STAMP_ROAR_RADIUS);
-        for (Unit unit: list) {  
-            unit.buff_stampRoar.mod = o.fgd.STAMP_ROAR_SPEED_MOD;
-            unit.buff_stampRoar.activateForDuration(o.fgd.STAMP_ROAR_DURATION);            
-        }
-        o.world.releaseUnitList(list);
+    public void casted(Unit target, double x, double y, int castTime, int powerCost) {  
         if (!o.cfg.glyph_stampRoar && !o.isCatOrBearForm()) {
             o.buff_form_bear.activate();
+        }        
+        UnitList list = o.world.retainUnitList();
+        try {
+            o.collectUnits(list, false, o.world_x, o.world_y, o.cfg.glyph_stampRoar ? o.fgd.STAMP_ROAR_GLYPH_RADIUS : o.fgd.STAMP_ROAR_RADIUS);
+            for (Unit unit: list) {  
+                unit.buff_stampRoar.mod = o.fgd.STAMP_ROAR_SPEED_BONUS;
+                unit.buff_stampRoar.activateForDuration(o.fgd.STAMP_ROAR_DURATION);            
+            }
+        } finally {
+            o.world.releaseUnitList(list);            
         }
     }
 
