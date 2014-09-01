@@ -2,17 +2,11 @@ package catus2.feral;
 
 import catus2.OriginT;
 import catus2.SchoolT;
-import catus2.buffs.AbstractBuffModel;
+import catus2.buffs.Buff;
+import catus2.buffs.BuffModel;
 
-public class FeralBleed extends FeralBuff<FeralBleed.BuffModel> {
+public class FeralBleed extends Buff<BuffModel,Feral,FeralView> {
 
-    static public class BuffModel extends AbstractBuffModel { 
-        public BuffModel(int id) {
-            super(id);
-        }
-        public double tickDamagePerAP;
-    }
-    
     public FeralBleed(BuffModel model, FeralView view) {
         super(model, view);
     }
@@ -26,7 +20,7 @@ public class FeralBleed extends FeralBuff<FeralBleed.BuffModel> {
     }
     
     public double getTickDamage() {
-        return v.getBleedMod() * snapshot * v.o.getRazorClawsMod() * v.o.getAP() * m.tickDamagePerAP;        
+        return v.getBleedMod() * snapshot * v.o.getRazorClawsMod() * v.o.getAP() * m.scaling;        
     }
     
 }

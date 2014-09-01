@@ -20,7 +20,7 @@ public class FerociousBite extends CatFinisher.Offensive {
         boolean bleeding = target.isBleeding();  
         double crit = o.getCritChance();
         if (o.buff_bonus_t15_4pc.tryConsume()) {
-            crit += o.fgd.SET_T15_4PC_CRIT;
+            crit += o.fgd.BONUS_T15_4PC_CRIT;
         }
         if (bleeding) {
             crit += crit;

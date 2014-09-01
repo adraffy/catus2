@@ -123,16 +123,20 @@ public class FeralGameData {
     public double STAMP_ROAR_SPEED_MOD = 1.6;
     public int STAMP_ROAR_GLYPH_RADIUS = 40;
 
-    public double SET_T15_2PC_CHANCE_PER_CP = 0.15;
-    public int SET_T15_2PC_CP_GAIN = 1;
-    public double SET_T15_4PC_CRIT = 0.4;
-    public int SET_T16_2PC_DURATION = 30000;
-    public int SET_T15_4PC_CHARGES = 3;
+    public double BONUS_T15_2PC_CHANCE_PER_CP = 0.15;
+    public int BONUS_T15_2PC_CP_GAIN = 1;
     
-    public int SET_T16_4PC_CP_GAIN = 3;
-    public int SET_T16_4PC_DURATION = 12000;
+    public double BONUS_T15_4PC_CRIT = 0.4;
+    public int BONUS_T15_4PC_DURATION = 30000;
+    public int BONUS_T15_4PC_CHARGES = 3;
     
-    public double SET_WOD_PVP_4PC_DURATION = 6000;
+    public double BONUS_T16_2PC_SHRED_SWIPE_DAMAGE_MOD = 1.5;
+    public int BONUS_T16_2PC_DURATION = 6000;
+    
+    public int BONUS_T16_4PC_CP_GAIN = 3;
+    public int BONUS_T16_4PC_DURATION = 12000;
+    
+    public int BONUS_WOD_PVP_4PC_DURATION = 6000;
     
     
 }

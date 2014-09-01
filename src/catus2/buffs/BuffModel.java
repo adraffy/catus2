@@ -1,6 +1,6 @@
 package catus2.buffs;
 
-public class AbstractBuffModel {
+public class BuffModel {
 
     public final int id;
     
@@ -13,9 +13,9 @@ public class AbstractBuffModel {
     public int base_frequency;
     public boolean hasted;
     
-    public double param;
+    public double scaling;
     
-    public AbstractBuffModel(int id) {
+    public BuffModel(int id) {
         this.id = id;
     }
     

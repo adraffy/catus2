@@ -2,7 +2,7 @@ package catus2.feral;
 
 import catus2.AbstractView;
 import catus2.Unit;
-import catus2.buffs.AbstractBuffModel;
+import catus2.buffs.BuffModel;
 
 public class FeralView extends AbstractView<Feral> {
 
@@ -10,9 +10,9 @@ public class FeralView extends AbstractView<Feral> {
     public final FeralBleed dot_rake;
     public final FeralBleed dot_thrash_cat;
     //public final FeralBleed dot_thrashBear;   
-    public final FeralBuff<AbstractBuffModel> dot_mf;
-    public final FeralBuff<AbstractBuffModel> dot_mf_cat;
-    public final FeralBuff<AbstractBuffModel> hot_rejuv;
+    public final FeralBuff<BuffModel> dot_mf;
+    public final FeralBuff<BuffModel> dot_mf_cat;
+    public final FeralBuff<BuffModel> hot_rejuv;
 
     public final FeralBuff debuff_pvp_wod_4pc;
 

@@ -22,7 +22,5 @@ public class PPM extends AbstractChance { //<O extends Unit> extends AbstractCha
     protected void appendChanceDescTo(StringBuilder sb) {
         sb.append(String.format("%.2f PPM", ppm));
     }
-
-    
     
 }

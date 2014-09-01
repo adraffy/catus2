@@ -31,11 +31,11 @@ public abstract class CatFinisher extends FeralSpell {
             if (o.cfg.talent_sotf && c > 0) {                
                 o.power_energy.add(c * o.fgd.SOTF_ENERGY_PER_COMBO);
             }       
-            if (o.cfg.bonus_t15_2pc && o.world.randomChance(c * o.fgd.SET_T15_2PC_CHANCE_PER_CP)) {
-                o.power_combos.add(o.fgd.SET_T15_2PC_CP_GAIN);
+            if (o.cfg.bonus_t15_2pc && o.world.randomChance(c * o.fgd.BONUS_T15_2PC_CHANCE_PER_CP)) {
+                o.power_combos.add(o.fgd.BONUS_T15_2PC_CP_GAIN);
             }  
             if (o.cfg.bonus_t16_4pc && o.buff_bonus_t16_4pc.tryConsume()) {
-                o.power_combos.add(o.fgd.SET_T16_4PC_CP_GAIN);
+                o.power_combos.add(o.fgd.BONUS_T16_4PC_CP_GAIN);
             }
         } else {
             o.refundEnergyCost(powerCost);

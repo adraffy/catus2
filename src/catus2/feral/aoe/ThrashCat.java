@@ -11,7 +11,6 @@ public class ThrashCat extends FeralSpell {
         super(owner, TargetStyle.NONE);
     }
 
-
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
        

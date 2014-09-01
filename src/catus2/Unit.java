@@ -1,6 +1,6 @@
 package catus2;
 
-import catus2.buffs.AbstractBuffModel;
+import catus2.buffs.BuffModel;
 import catus2.buffs.ProductBuff;
 import catus2.procs.Trigger;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
     
     public final ArrayList<Trigger> triggerList = new ArrayList<>();
     
-    public final V self = createView(this);    
+    public final V selfView = createView(this);    
     
     public Unit() {
         createStacks();        
@@ -242,7 +242,7 @@ public abstract class Unit<V extends AbstractView<? extends Unit>> {
         return movementSpeedMods.product();
     }
     
-    public final ProductBuff buff_stampRoar = new ProductBuff(new AbstractBuffModel(SpellId.Druid.STAMPEDING_ROAR), self, movementSpeedMods);
+    public final ProductBuff buff_stampRoar = new ProductBuff(new BuffModel(SpellId.Druid.STAMPEDING_ROAR), selfView, movementSpeedMods);
     
     /*
     public boolean hasMovementSpeed(int id) {

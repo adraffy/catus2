@@ -8,7 +8,8 @@ import catus2.ProductMap;
 import catus2.SchoolT;
 import catus2.SpellId;
 import catus2.Unit;
-import catus2.buffs.AbstractBuffModel;
+import catus2.buffs.Buff;
+import catus2.buffs.BuffModel;
 import catus2.buffs.ProductBuff;
 import catus2.chance.ChanceFactory;
 import catus2.chance.PPM;
@@ -34,16 +35,17 @@ public class Feral extends Unit<FeralView> {
     public FeralConfig cfg;
     public FeralGameData fgd;
     
-    public final AbstractBuffModel buffModel_rejuv = new AbstractBuffModel(SpellId.Druid.REJUV);
-    public final AbstractBuffModel buffModel_mf = new AbstractBuffModel(SpellId.Druid.MF);
-    public final AbstractBuffModel buffModel_mf_cat = new AbstractBuffModel(SpellId.Druid.Feral.MF);
+    // buffs/debuffs
+    public final BuffModel buffModel_rejuv = new BuffModel(SpellId.Druid.REJUV);
+    public final BuffModel buffModel_mf = new BuffModel(SpellId.Druid.MF);
+    public final BuffModel buffModel_mf_cat = new BuffModel(SpellId.Druid.Feral.MF);   
+    public final BuffModel buffModel_pvp_wod_4pc = new BuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC);
     
-    public final AbstractBuffModel buffModel_pvp_wod_4pc = new AbstractBuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC);
-    
-    public final FeralBleed.BuffModel buffModel_rip = new FeralBleed.BuffModel(SpellId.Druid.Feral.RIP);
-    public final FeralBleed.BuffModel buffModel_rake = new FeralBleed.BuffModel(SpellId.Druid.Feral.RAKE_DOT);
-    public final FeralBleed.BuffModel buffModel_thrash_cat = new FeralBleed.BuffModel(SpellId.Druid.THRASH_CAT);
-    public final FeralBleed.BuffModel buffModel_thrash_bear = new FeralBleed.BuffModel(SpellId.Druid.THRASH_BEAR);
+    // bleeds
+    public final BuffModel buffModel_rip = new BuffModel(SpellId.Druid.Feral.RIP);
+    public final BuffModel buffModel_rake = new BuffModel(SpellId.Druid.Feral.RAKE_DOT);
+    public final BuffModel buffModel_thrash_cat = new BuffModel(SpellId.Druid.THRASH_CAT);
+    public final BuffModel buffModel_thrash_bear = new BuffModel(SpellId.Druid.THRASH_BEAR);
     
     public Feral() {
         super();
@@ -93,24 +95,44 @@ public class Feral extends Unit<FeralView> {
         }
     }
     
-        
-    //[Feral Rage]
-    //http://www.wowhead.com/spell=146874
-    //After using Tiger's Fury, your next finishing move will restore 3 combo points on your current target after being used.
-    public final FeralBuff buff_bonus_t16_4pc = new FeralBuff<>(new AbstractBuffModel(SpellId.Druid.Feral.Set.T16_4PC_BUFF), this);
-    public final FeralBuff buff_bonus_t15_4pc = new FeralBuff<>(new AbstractBuffModel(SpellId.Druid.Feral.Set.T15_4PC_BUFF), this);
-    public final FeralBuff buff_hotw = new FeralBuff<>(new AbstractBuffModel(SpellId.Druid.Feral.HOTW), this);
+    // Tiger's Fury
+    // http://wow.wowhead.com/spell=138358
+    // Increases critical strike chance by 40% for next 3 uses of Mangle, Shred, Ferocious Bite, Ravage, and Swipe.  Lasts 30 sec.
+    public final Buff buff_bonus_t15_4pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T15_4PC_BUFF), selfView);
     
-    public final FeralBuff buff_ooc = new FeralBuff(new AbstractBuffModel(SpellId.Druid.Feral.OOC), this);        
-    public final FeralBuff buff_sr = new FeralBuff(new AbstractBuffModel(SpellId.Druid.Feral.SR), this);        
-    public final FeralBuff buff_tf = new FeralBuff(new AbstractBuffModel(SpellId.Druid.Feral.TF), this);    
-    public final FeralBuff buff_bt = new FeralBuff(new AbstractBuffModel(SpellId.Druid.Feral.BT), this);    
-    public final FeralBuff buff_ps = new FeralBuff(new AbstractBuffModel(SpellId.Druid.Feral.PS_BUFF), this);
+    // Feral Fury
+    // http://www.wowhead.com/spell=144865
+    // Omen of Clarity increases damage of Shred, Mangle, Swipe, and Ravage by 50% for 6 sec.
+    public final Buff buff_bonus_t16_2pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T16_2PC_BUFF), selfView);
     
-    public final ProductBuff buff_si = new ProductBuff(new AbstractBuffModel(SpellId.Druid.SI), self, damageTakenMod);    
-    public final ProductBuff buff_berserk_cat = new ProductBuff(new AbstractBuffModel(SpellId.Druid.BERSERK_CAT), self, power_energy.costMods);
+    // Feral Rage
+    // http://www.wowhead.com/spell=146874
+    // After using Tiger's Fury, your next finishing move will restore 3 combo points on your current target after being used.
+    public final Buff buff_bonus_t16_4pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T16_4PC_BUFF), selfView);
+
+    public final Buff buff_ooc = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.OOC), selfView) {
+        @Override
+        public void gotActivated() {
+            if (v.o.cfg.bonus_t16_2pc) {
+                v.o.buff_bonus_t16_2pc.activate();
+            }
+        }
+        @Override
+        public void gotRefreshed() {
+            gotActivated();
+        }        
+    };
     
-    public final FeralBuff buff_prowl = new FeralBuff(new AbstractBuffModel(SpellId.Druid.PROWL), this);
+    public final Buff buff_sr = new Buff(new BuffModel(SpellId.Druid.Feral.SR), selfView);        
+    public final Buff buff_tf = new Buff(new BuffModel(SpellId.Druid.Feral.TF), selfView);    
+    public final Buff buff_bt = new Buff(new BuffModel(SpellId.Druid.Feral.BT), selfView);    
+    public final Buff buff_ps = new Buff(new BuffModel(SpellId.Druid.Feral.PS_BUFF), selfView);
+    public final Buff buff_prowl = new FeralBuff(new BuffModel(SpellId.Druid.PROWL), selfView);
+    public final Buff buff_hotw = new Buff(new BuffModel(SpellId.Druid.Feral.HOTW), selfView);
+    
+    public final ProductBuff buff_si = new ProductBuff(new BuffModel(SpellId.Druid.SI), selfView, damageTakenMod);    
+    public final ProductBuff buff_berserk_cat = new ProductBuff(new BuffModel(SpellId.Druid.BERSERK_CAT), selfView, power_energy.costMods);
+    
     
     // ---
         
@@ -189,7 +211,7 @@ public class Feral extends Unit<FeralView> {
     }
      
     
-    public final FeralBuff<AbstractBuffModel> buff_form_cat = new FeralBuff<AbstractBuffModel>(new AbstractBuffModel(SpellId.Druid.CAT_FORM), this) {
+    public final FeralBuff<BuffModel> buff_form_cat = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.CAT_FORM), this) {
         @Override
         public void gotActivated() {            
             v.o.shapeshifted();
@@ -206,11 +228,11 @@ public class Feral extends Unit<FeralView> {
         }
     };
     
-    public final FeralBuff<AbstractBuffModel> buff_form_bear = new FeralBuff<AbstractBuffModel>(new AbstractBuffModel(SpellId.Druid.BEAR_FORM), this) {
+    public final FeralBuff<BuffModel> buff_form_bear = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.BEAR_FORM), this) {
         
     };
     
-    public final FeralBuff<AbstractBuffModel> buff_form_kotj = new FeralBuff<AbstractBuffModel>(new AbstractBuffModel(SpellId.Druid.Feral.KOTJ), this) {
+    public final FeralBuff<BuffModel> buff_form_kotj = new FeralBuff<BuffModel>(new BuffModel(SpellId.Druid.Feral.KOTJ), this) {
         @Override
         public void gotActivated() {            
             v.o.buff_form_cat.activate();
@@ -331,23 +353,23 @@ public class Feral extends Unit<FeralView> {
         
         buffModel_rip.base_frequency = fgd.RIP_FREQUENCY;
         buffModel_rip.default_duration = fgd.RIP_DURATION;        
-        buffModel_rip.tickDamagePerAP = fgd.RIP_TICK_DAMAGE_PER_AP;
+        buffModel_rip.scaling = fgd.RIP_TICK_DAMAGE_PER_AP;
         buffModel_rip.pandemic = true;
         
         buffModel_rake.base_frequency = fgd.RAKE_FREQUENCY;
         buffModel_rake.default_duration = fgd.RAKE_DURATION;
-        buffModel_rake.tickDamagePerAP = fgd.RAKE_TICK_DAMAGE_PER_AP;
+        buffModel_rake.scaling = fgd.RAKE_TICK_DAMAGE_PER_AP;
         buffModel_rake.pandemic = true;
         
         buffModel_thrash_cat.base_frequency = fgd.THRASH_CAT_FREQUENCY;
         buffModel_thrash_cat.default_duration = fgd.THRASH_CAT_DURATION;
         buffModel_thrash_cat.pandemic = true;
-        buffModel_thrash_cat.tickDamagePerAP = fgd.THRASH_CAT_TICK_DAMAGE_PER_AP;     
+        buffModel_thrash_cat.scaling = fgd.THRASH_CAT_TICK_DAMAGE_PER_AP;     
         
         buffModel_thrash_bear.base_frequency = fgd.THRASH_BEAR_FREQUENCY;
         buffModel_thrash_bear.default_duration = fgd.THRASH_BEAR_DURATION;
         buffModel_thrash_bear.pandemic = true;
-        buffModel_thrash_bear.tickDamagePerAP = fgd.THRASH_BEAR_TICK_DAMAGE_PER_AP;     
+        buffModel_thrash_bear.scaling = fgd.THRASH_BEAR_TICK_DAMAGE_PER_AP;     
         
         
         buff_bt.m.setCharges(fgd.BT_CHARGES);
@@ -387,10 +409,10 @@ public class Feral extends Unit<FeralView> {
         spell_thrash_cat.setEnergyCost(fgd.THRASH_CAT_ENERGY_COST);
         
         
-        buff_bonus_t15_4pc.m.default_duration = fgd.SET_T16_4PC_DURATION;
-        buff_bonus_t15_4pc.m.setCharges(fgd.SET_T15_4PC_CHARGES);
+        buff_bonus_t15_4pc.m.default_duration = fgd.BONUS_T16_4PC_DURATION;
+        buff_bonus_t15_4pc.m.setCharges(fgd.BONUS_T15_4PC_CHARGES);
 
-        buff_bonus_t16_4pc.m.default_duration = fgd.SET_T16_4PC_DURATION;
+        buff_bonus_t16_4pc.m.default_duration = fgd.BONUS_T16_4PC_DURATION;
         
         buff_hotw.m.default_duration = fgd.HOTW_DURATION;
             

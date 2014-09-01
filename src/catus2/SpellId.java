@@ -31,6 +31,7 @@ public class SpellId {
             static public final int HOTW = 108292;
             static public class Set {
                 static public final int T15_4PC_BUFF = 138358; // tiger's fury
+                static public final int T16_2PC_BUFF = 144865; // feral fury
                 static public final int T16_4PC_BUFF = 146874; // feral rage
                 static public final int PVP_WOD_4PC = 165699; // bloodletting
             }

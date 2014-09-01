@@ -6,12 +6,12 @@ import catus2.Timeline;
 import catus2.Unit;
 import catus2.World;
 
-abstract public class AbstractBuff<M extends AbstractBuffModel,O extends Unit<V>,V extends AbstractView<O>> {
+public class Buff<M extends BuffModel,O extends Unit<V>,V extends AbstractView<O>> {
     
     public final M m;
     public final V v;
        
-    public AbstractBuff(M model, V view) {
+    public Buff(M model, V view) {
         this.m = model;
         this.v = view;
     }

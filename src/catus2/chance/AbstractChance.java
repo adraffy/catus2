@@ -28,14 +28,13 @@ abstract public class AbstractChance {
     }
     
     protected boolean canProc(int t) {
-        return clock() >= ready;
+        return t >= ready;
     }
     
     protected void beginCooldown(int t) {  
         ready = t + icd;
     }
-    
-    
+        
     public final boolean canProc() {
         return canProc(clock());
     }
