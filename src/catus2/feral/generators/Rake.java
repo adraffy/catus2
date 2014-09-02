@@ -1,8 +1,8 @@
 package catus2.feral.generators;
 
-import catus2.AttackT;
-import catus2.OriginT;
-import catus2.SchoolT;
+import catus2.Application;
+import catus2.Origin;
+import catus2.School;
 import catus2.feral.Feral;
 import catus2.feral.FeralBleed;
 import catus2.feral.FeralView;
@@ -14,18 +14,19 @@ public class Rake extends CatGenerator {
     }
 
     @Override
-    public AttackT generate(FeralView target) {
+    public Application generate(FeralView target) {
         o.applySavageRoarGlyph();
-        double crit = o.getCritChance();
-        AttackT atk = o.yellow_melee(target.unit, crit);
+        boolean stealth = o.isStealthed();
+        Application app = o.tryApply(target.unit, this, Origin.MELEE_BLEED, School.PHYSICAL);
         boolean bt = o.buff_bt.tryConsume();
-        if (atk.landed) {        
+        if (app.hit()) {        
             FeralBleed rake = target.dot_rake;                
-            rake.snapshot = o.getSnapshotableDamageMod() * o.getBloodtalonsMod(bt);
-            rake.activate();            
-            o.applyDamage(rake.getTickDamage(), target.unit, rake, OriginT.BLEED, SchoolT.SCHOOLS_PHYSICAL, atk == AttackT.CRIT);                      
+            rake.snapshot = o.getSnapshotableDamageMod() * o.getBloodtalonsMod(bt) * (stealth ? o.fgd.PERK_IMPROVED_RAKE_DAMAGE_MOD : 1);
+            rake.activate();  
+            app.base = rake.getTickDamage();
+            target.applyBleed(app);            
         }
-        return atk;
+        return app;
     }
     
 }

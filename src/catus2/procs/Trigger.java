@@ -1,6 +1,6 @@
 package catus2.procs;
 
-import catus2.OriginT;
+import catus2.Origin;
 import catus2.Unit;
 import catus2.chance.AbstractChance;
 import catus2.chance.ChanceFactory;
@@ -19,6 +19,6 @@ abstract public class Trigger<O extends Unit,C extends AbstractChance> {
         this.originMask = originMask;
     }
     
-    abstract public void triggered(OriginT origin, boolean wasCrit);
+    abstract public void triggered(Origin origin, boolean wasCrit);
     
 }

@@ -1,9 +1,11 @@
 package catus2.feral;
 
 import catus2.AbstractView;
-import catus2.OriginT;
-import catus2.SchoolT;
+import catus2.Application;
+import catus2.Origin;
+import catus2.School;
 import catus2.Unit;
+import catus2.buffs.AccDoT;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 import catus2.buffs.ModBuff;
@@ -19,7 +21,8 @@ public class FeralView extends AbstractView<Feral> {
     public final FeralBleed dot_rip;
     public final FeralBleed dot_rake;
     public final FeralBleed dot_thrash_cat;
-    public final Buff debuff_pvp_wod_4pc;
+    public final AccDoT<BuffModel,Feral,FeralView> dot_bonus_t17_4pc;
+    public final Buff debuff_bonus_pvp_wod_4pc;
 
     public FeralView(Feral owner, Unit target) {
         super(owner, target);
@@ -31,19 +34,25 @@ public class FeralView extends AbstractView<Feral> {
         dot_rip = new FeralBleed(o.buffModel_rip, this);
         dot_rake = new FeralBleed(o.buffModel_rake, this);
         dot_thrash_cat = new FeralBleed(o.buffModel_thrash_cat, this);
+        dot_bonus_t17_4pc = new AccDoT<BuffModel,Feral,FeralView>(o.buffModel_bonus_t17_4pc, this) {
+            @Override
+            public void gotAccDamage(double damage) {
+                o.bonus_t17_2pc_trigger();
+                Application app = o.tryApply(unit, this, Origin.BLEED, School.PHYSICAL, 0, 0);
+                app.base = damage;    
+                v.applyBleed(app);
+            }
+        };
         debuff_ff = new Buff(o.buffModel_ff, this);
-        debuff_pvp_wod_4pc = new Buff(o.buffModel_pvp_wod_4pc, this);
+        debuff_bonus_pvp_wod_4pc = new Buff(o.buffModel_bonus_pvp_wod_4pc, this);
     }
 
-    public double getBleedMod() {
-        return debuff_pvp_wod_4pc.isActive() ? 1.1 : 1;
-    }
-
-    public void applyBleedDamage(double damage, Object source, boolean crit) {
-        if (debuff_pvp_wod_4pc.isActive()) {
-            damage *= o.fgd.BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD;
-        }
-        o.applyDamage(damage, unit, source, OriginT.BLEED, SchoolT.SCHOOLS_PHYSICAL, crit);
+    public void applyBleed(Application app) {        
+        // this _IGNORES_ origin
+        if (debuff_bonus_pvp_wod_4pc.isActive()) {
+            app.base *= o.fgd.BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD;
+        }  
+        o.executeApply(app);
     }
     
 }

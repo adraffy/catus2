@@ -7,7 +7,9 @@ public class FeralGameData {
     public double SHARPENED_CLAWS_CRIT_MOD = 1.05;
     public double CRITICAL_STRIKES_CRIT_BONUS = 0.1;
     public double LEATHER_SPECIALIZATION_AGI_MOD = 1.05;
-    public double RACIAL_TOUCH_OF_ELUNE_PERC_BONUS = 0.01;
+    
+    public double PERK_IMPROVED_RAKE_DAMAGE_MOD = 2;
+    public int PERK_ENHANCED_BERSERK_ENERGY_CEILING = 50;
     
     public double BITW_PERC = 0.25;
     
@@ -155,6 +157,8 @@ public class FeralGameData {
     public int BONUS_T16_4PC_CP_GAIN = 3;
     public int BONUS_T16_4PC_DURATION = 12000;
     
+    public int BONUS_T17_2PC_ENERGY_BONUS = 3;
+
     public double BONUS_T17_4PC_EXTRA_BLEED_COEFF = 0.15;
     public int BONUS_T17_4PC_FREQUENCY = 2000; // guess?
     public int BONUS_T17_4PC_DURATION = 6000;

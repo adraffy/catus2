@@ -142,13 +142,13 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
     }
             
     public void gotActivated(boolean refreshed) {}
-    public void gotTick(double fraction) {}
+    public void gotTick(double fraction) {} // guarenteed target is alive
     public void gotDeactivated() {}
     
     public final Tick duration_fader = new Tick() {
         @Override
         public void run() {
-            if (timeline().cancel(tick_fader)) {
+            if (timeline().cancel(tick_fader) && !v.unit.isDead()) {
                 ++tick_index;
                 gotTick((timeline().clock - last_clock) / last_frequency);
             }      
@@ -160,6 +160,9 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
     public final Tick tick_fader = new Tick() {
         @Override
         public void run() {
+            if (v.unit.isDead()) {
+                return;
+            }
             ++tick_index;
             gotTick(1);
             if (current_state) {

@@ -1,6 +1,6 @@
 package catus2.procs;
 
-import catus2.OriginT;
+import catus2.Origin;
 import catus2.Unit;
 import catus2.buffs.Buff;
 import catus2.chance.AbstractChance;
@@ -16,7 +16,7 @@ public class BuffTrigger<C extends AbstractChance> extends Trigger<Unit,C> {
     }
 
     @Override
-    public void triggered(OriginT origin, boolean wasCrit) {
+    public void triggered(Origin origin, boolean wasCrit) {
         buff.activate();
     }
 

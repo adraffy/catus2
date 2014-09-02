@@ -12,16 +12,20 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public final ModMap movementSpeed_sum = ModMap.sum(); // wod change
     
-    public final ModMap damageRecv_all_product = ModMap.product();
-    public final ModMap damageDone_all_product = ModMap.product();
     public final ModMap spellPower_product = ModMap.product();
-    public final ModMap[] damageRecv_school_product;
-    public final ModMap[] damageDone_school_product;
-    public final ModMap healingRecv_all_product = ModMap.product();
-    public final ModMap healingDone_all_product = ModMap.product();
     
-    public final ModMap healingCritBonus_sum = ModMap.sum(); // assumptions
-    public final ModMap damageCirtBonus_sum = ModMap.sum();
+    public final ModMap damageRecv_all_product = ModMap.product();
+    public final ModMap[] damageRecv_school_product;
+    
+    public final ModMap damageDone_all_product = ModMap.product();
+    public final ModMap[] damageDone_school_product;
+    public final ModMap damageDone_critBonus_sum = ModMap.sum();
+    
+    public final ModMap healingRecv_all_product = ModMap.product();
+    public final ModMap healingRecv_critBonus_sum = ModMap.product();
+    
+    public final ModMap healingDone_all_product = ModMap.product();    
+    public final ModMap healingDone_critBonus_sum = ModMap.sum(); // assumptions
 
     public final ModMap[] stat_product;
     public final int[] stat_raw;
@@ -41,9 +45,9 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public Unit(boolean npc) {
         this.npc = npc;
-        damageDone_school_product = new ModMap[SchoolT.NUM];    
-        damageRecv_school_product = new ModMap[SchoolT.NUM];
-        for (int i = 0; i < SchoolT.NUM; i++) {
+        damageDone_school_product = new ModMap[School.Idx.NUM];    
+        damageRecv_school_product = new ModMap[School.Idx.NUM];
+        for (int i = 0; i < School.Idx.NUM; i++) {
             damageDone_school_product[i] = new ModMap(true);
             damageRecv_school_product[i] = new ModMap(true);
         }         
@@ -87,7 +91,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public double defaultWorldX;
     public double defaultWorldY;
     
-    public double behindTargetProb;
+    public double frontTargetChance;
     
     public World world;
     
@@ -109,6 +113,17 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return unitRadius + (moving ? 2 : 0);
     }
     */
+    
+    
+    public boolean inFrontOf(Unit target) {
+        if (world.ignoreLocation) {
+            return !world.randomChance(frontTargetChance);
+        } else {
+            double angleToAttacker = target.angleTo(world_x, world_y);
+            double evasionSweep = GameHelp.HALF_PI;
+            return !GameHelp.isInsideAngle(angleToAttacker - target.world_dir, evasionSweep);
+        }  
+    }
     
     public double distanceTo(double x, double y) {
         return Math.hypot(x - world_x, y - world_y);
@@ -270,17 +285,14 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return true;
     }
     
-    public double getDamageTakenMod(int schoolMask) {
+    public double getDamageTakenMod(School schoo) {
         return 1;
     }
     
-    public double getDamageDoneMod(int schoolMask) {
+    public double getDamageDoneMod(School school) {
         double mod = damageDone_all_product.fold();
-        for (int i = 0; i < SchoolT.NUM && schoolMask > 0; i++) {
-            int bit = 1 << i;
-            if ((bit & schoolMask) == bit) {
-                mod *= damageDone_school_product[i].fold();
-            }            
+        for (int i : school.indexes) {
+            mod *= damageDone_school_product[i].fold();
         }
         return mod;
     }
@@ -320,8 +332,12 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return 0.03;
     }
     
-    public double getSpellMiss() {
+    public double getSpellMissChance() {
         return 0.06;
+    }
+    
+    public double getDodgeChance() {
+        return 0.03;
     }
     
     public double getParryChance() {
@@ -332,8 +348,12 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return 0.03;
     }
     
-    public double getHitAndExpertise() { // merged into 1 since this stat is dead    
-        return npc ? 0 : 0.15;
+    public double getHitChance() { 
+        return npc ? 0 : 0.075;
+    }
+    
+    public double getExpChance() { 
+        return npc ? 0 : 0.075;
     }
     
     public double getCritHealBonusMod(boolean npc) {
@@ -343,7 +363,10 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public double getCritDamageBonusMod() {
         return 1;
     }
-    
+        
+    public double getMultistrikeChance() {
+        return 0.1;
+    }
     
     
     public boolean isStealthed() {
@@ -354,12 +377,10 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return 0;
     }
     
-    public int getSP(int schoolMask) {
+    public final int getSP(School school) {
         int max = 0;
-        for (int i = 0; i < SchoolT.NUM; i++) {
-            if ((schoolMask & (1 << i)) != 0) {
-                max = Math.max(max, getSP_extra(i));
-            }            
+        for (int i : school.indexes) {
+            max = Math.max(max, getSP_extra(i));
         }        
         return getStat(UnitStat.SP, max);
     }
@@ -368,12 +389,8 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return 0;
     }    
     
-    public int getAP() {
+    public final int getAP() {
         return getStat(UnitStat.AP, getAP_extra());
-    }
-    
-    public double getMultistrikeChance() {
-        return 0.1;
     }
     
     //
@@ -381,22 +398,22 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     static public final int FLAG_CRIT  = 0b0001;
     static public final int FLAG_MULTI = 0b0010;
    
-    public void applyRawHeal(double base, Unit target, Object source, OriginT origin, int schoolMask, int flags) {
+    public void applyRawHeal(double base, Unit target, Object source, Origin origin, School school, int flags) {
         
     }
     
-    public void applyHeal_percentHealth(double perc, Unit target, Object source, OriginT origin, int schoolMask) {
-        applyRawHeal(perc * target.getHealthMaximum(), target, source, origin, schoolMask, 0);
+    public void applyHeal_percentHealth(double perc, Unit target, Object source, Origin origin, School school) {
+        applyRawHeal(perc * target.getHealthMaximum(), target, source, origin, school, 0);
     }
     
-    public void applyHeal(double base, Unit target, Object source, OriginT origin, int schoolMask, double critChance, double multiChance) {
+    public void applyHeal(double base, Unit target, Object source, Origin origin, School school, double critChance, double multiChance) {
         double heal = base;
         int flags = 0;
         if (world.randomChance(critChance)) {
             //heal *= getCritHealBonusMod(target);
             flags |= FLAG_CRIT;
         }
-        applyRawHeal(heal, target, source, origin, schoolMask, flags);
+        applyRawHeal(heal, target, source, origin, school, flags);
         if (multiChance > 0) {
             for (int i = 0; i < 2; i++) {
                 if (world.randomChance(multiChance)) {
@@ -406,40 +423,38 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
                         //heal *= getCritHealBonusMod(target);
                         flags |= FLAG_CRIT;
                     }                    
-                    applyRawHeal(heal, target, source, origin, schoolMask, flags);
+                    applyRawHeal(heal, target, source, origin, school, flags);
                 }
             }
         }
     }
     
-    public void applyRawDamage(Unit target, Object source, int schoolMask, boolean crit, double damage) {
+    public void applyRawDamage(Unit target, Object source, School school, boolean crit, double damage) {
         
         if (crit) {
             damage += damage * getCritDamageBonusMod();
         }                
-        damage *= target.getDamageTakenMod(schoolMask);
+        damage *= target.getDamageTakenMod(school);
         
     }
     
-    // these args suck...
-    // need access to crit
-    public void applyDamage(double damage, Unit target, Object source, OriginT origin, int schoolMask, boolean crit) {
+    public void applyDamage(double damage, Unit target, Object source, Origin origin, School school, boolean crit) {
         boolean blockable = false;
         switch (origin) {
             case MELEE:
             case WHITE:
                 blockable = true;                
         }        
-        applyDamage(damage, target, source, origin, schoolMask, crit, getMultistrikeChance(), blockable);
+        applyDamage(damage, target, source, origin, school, crit, getMultistrikeChance(), blockable);
     }
-    public void applyDamage(double damage, Unit target, Object source, OriginT origin, int schoolMask, boolean crit, double multiChance, boolean blockable) {
+    public void applyDamage(double damage, Unit target, Object source, Origin origin, School school, boolean crit, double multiChance, boolean blockable) {
         
-        damage *= getDamageDoneMod(schoolMask);
-        applyRawDamage(target, source, schoolMask, crit, damage);
+        damage *= getDamageDoneMod(school);
+        applyRawDamage(target, source, school, crit, damage);
         if (multiChance > 0) {
             for (int i = 0; i < 2; i++) {
                 if (world.randomChance(multiChance)) {
-                    applyRawDamage(target, source, schoolMask, crit, damage * world.multistrikeDamageMod);
+                    applyRawDamage(target, source, school, crit, damage * world.multistrikeDamageMod);
                 }
             }
         }
@@ -452,7 +467,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public double getBlockMod(Unit attacker) {  
         boolean blocked;
         if (world.ignoreLocation) {
-            blocked = world.randomChance(attacker.behindTargetProb);
+            blocked = world.randomChance(attacker.frontTargetChance);
         } else {
             double angleToAttacker = angleTo(attacker.world_x, attacker.world_y);
             double evasionSweep = GameHelp.HALF_PI;
@@ -468,7 +483,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public final Power power_mana = new Power();
     public final Power power_rage = new Power();
     
-    // -------
+    // ---
     
     public V currentTarget;
     
@@ -491,6 +506,51 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return temp;        
     }
     
+    // ---
+    
+    public void init() {
+        // stuff goes here
+    }
+  
+    /*
+    public ApplyEvent yellow_spell(Unit target) { return yellow_spell(target, getCritChance()); }
+    public ApplyEvent yellow_spell(Unit target, double critChance) {
+        double p = world.rng.nextDouble();
+        int LD = target.level - level;
+        double missChance = target.getSpellMissChance() + 0.03 * LD + 0.08 * Math.max(LD - 3, 0) - getHitChance() - getExpChance();
+        if (missChance > 0) {
+            p -= missChance;
+            if (p < 0) {
+                return new ApplyEvent(target, ApplyEvent.MissType.MISS);
+            }
+        }
+        ApplyEvent de = new ApplyEvent(target, null);
+        if (critChance > 0) {
+            de.crit = p < critChance - getCritSupression(LD);
+        }
+        return de;
+    }
+    
+    public ApplyEvent yellow_tick(Unit target) { return yellow_tick(target, getCritChance()); }
+    public ApplyEvent yellow_tick(Unit target, double critChance) {
+        int LD = target.level - level;   
+        ApplyEvent de = new ApplyEvent(target, null);
+        if (critChance > 0) {
+            de.crit = world.randomChance(critChance - getCritSupression(LD));
+        }
+        return de;
+    }
+    
+    public AttackT yellow_melee(Unit target, double crit) {
+        
+        crit -= Math.max(0, target.level - level); 
+        
+        double p = world.rng.nextDouble();
+        
+        return AttackT.HIT;
+    }
+    */
+      
     // ----    
     // fix me: move to AttackTable class or something 
         
@@ -504,12 +564,9 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     // npc hit = 0
     // npc exp = 0
     
-    static double getCritChanceDelta(int defenderLevelDelta) {
-        return defenderLevelDelta > 0 ? -0.01 * Math.min(defenderLevelDelta, 10) : 0;
-    }
-    
-    static double getSpellMissChance(int defenderLevelDelta) {
-        return 0.11 * Math.max(defenderLevelDelta - 3, 0);
+    // assumed non-negative
+    static double getCritSupression(int defenderLevelDelta) {
+        return defenderLevelDelta > 0 ? 0.01 * Math.min(defenderLevelDelta, 10) : 0;
     }
     
     /*
@@ -521,38 +578,116 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     Dual Wielding still imposes a 19% chance to miss, to balance it with two-handed weapon use.
     */
     
-    public AttackT yellow_spell(Unit target, double critChance) {
+    public Application tryApply(Unit target, Object source, Origin origin, School school) {
+        return tryApply(target, source, origin, school, getCritChance(), 0);
+    }
+    public Application tryApply(Unit target, Object source, Origin origin, School school, double critChance, int flags) {
         double p = world.rng.nextDouble();
-        // miss
-        // crit
-        // hit
-        int LD = target.level - level;
-        double missChance = target.getSpellMiss() + 0.03 * LD + 0.08 * Math.max(LD - 3, 0) - getHitAndExpertise();
+        int LD = target.level - level;          
+        boolean isWhite = false; // enable-able via flag?
+        boolean isEvadeable = false; // enable-able via flag?
+        double missChance;
+        switch (origin) {
+            case HEAL:
+            case BLEED:
+            case DOT:
+            case HOT:
+                missChance = 0;
+                break;                
+            case WHITE:
+                isWhite = true;
+            case MELEE:
+            case MELEE_BLEED:
+                missChance = target.getMeleeMissChance() + 0.015 * LD + (target.npc ? 0.015 * Math.max(LD - 3, 0) : 0) - getHitChance();
+                break;
+            case SPELL:
+                missChance = target.getSpellMissChance() + 0.03 * LD + 0.08 * Math.max(LD - 3, 0) - getHitChance() - getExpChance();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown origin: " + origin);            
+        }
         if (missChance > 0) {
             p -= missChance;
             if (p < 0) {
-                return AttackT.MISS;
+                return new Application(target, source, origin, school, Application.MissType.MISS);
+            }
+        }        
+        boolean inFront = false;
+        if (isEvadeable) {
+            inFront = inFrontOf(target);
+            if (inFront) {
+                if ((flags & Application.CANNOT_BE_DODGED) == 0) {
+                    double dodgeChance = target.getDodgeChance() + 0.015 * LD - getExpChance();
+                    if (dodgeChance > 0) {
+                        p -= dodgeChance;
+                        if (p < 0) {
+                            return new Application(target, source, origin, school, Application.MissType.DODGE);
+                        }
+                    }            
+                }        
+                if ((flags & Application.CANNOT_BE_PARRIED) == 0) {
+                    double parryChance = target.getParryChance() + 0.015 * LD + (target.npc && LD > 2 ? 0.03 : 0) - getExpChance();
+                    if (parryChance > 0) {
+                        p -= parryChance;
+                        if (p < 0) {
+                            return new Application(target, source, origin, school, Application.MissType.PARRY);
+                        }
+                    }            
+                }
             }
         }
-        if (critChance > 0) {
-            p -= critChance + getCritChanceDelta(LD);
+        Application de = new Application(target, source, origin, school, null);
+        boolean found = false;
+        if (isWhite && target.npc && LD > 3) { // can glance
+            double glanceChance = 0.1 + 0.1 * LD;
+            p -= glanceChance;
             if (p < 0) {
-                return AttackT.CRIT;
+                de.scale = 0.75;
+                de.flags |= Application.DID_GLANCE;
+                found = true;
+            }            
+        }
+        if (!found && critChance > 0) { // can crit
+            p -= critChance - getCritSupression(LD);
+            if (p < 0) {
+                de.scale = 2; // crit damage bonus...
+                de.flags |= Application.DID_CRIT;
+                found = true;
             }
         }
-        return AttackT.HIT;
+        if (!found && isWhite && npc && LD < -3) { // can crush
+            double crushChance = -0.15 + -0.1 * LD;
+            p -= crushChance;
+            if (p < 0) {
+                de.scale = 1.5;
+                de.flags |= Application.DID_CRUSH;
+                found = true;
+            }            
+        }        
+        if (inFront && (flags & Application.CANNOT_BE_BLOCKED) == 0) { // can dodge (second roll)
+            double blockChance = getBlockChance() + 0.015 * LD; 
+            if (world.randomChance(blockChance)) {
+                de.scale *= 0.7;
+                de.flags |= Application.DID_BLOCK;
+            }
+        }        
+        return de;
     }
     
-    public AttackT yellow_melee(Unit target, double crit) {
-        crit -= Math.max(0, target.level - level); 
+    
+    // these args suck...
+    // need access to crit
+    public void executeApply(Application app) {
         
-        double p = world.rng.nextDouble();
+        if (app.heal()) {
+            
+            
+        } else {
+            double damage = app.base * app.scale;
+            
+        }
         
-        return AttackT.HIT;
     }
     
-    public void init() {
-        
-    }
     
 }

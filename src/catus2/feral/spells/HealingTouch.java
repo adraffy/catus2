@@ -1,8 +1,8 @@
 package catus2.feral.spells;
 
-import catus2.OriginT;
+import catus2.Origin;
 import catus2.feral.Feral;
-import catus2.SchoolT;
+import catus2.School;
 import catus2.TargetStyle;
 import catus2.Unit;
 
@@ -36,7 +36,7 @@ public class HealingTouch extends FeralSpell {
     
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        double heal = o.getSP(SchoolT.Idx.NATURE) * o.fgd.HT_HEALING_PER_SP;  // what kind of range is this?   
+        double heal = o.getSP(School.NATURE) * o.fgd.HT_HEALING_PER_SP;  // what kind of range is this?   
         if (o.buff_ps.tryConsume()) {
             heal *= o.fgd.PS_HT_HEALING_MOD;
         }         
@@ -45,9 +45,9 @@ public class HealingTouch extends FeralSpell {
             heal *= o.fgd.DOC_HT_REJUV_HEAL_MOD;
         } 
         double multi = o.getMultistrikeChance();
-        o.applyHeal(heal, target, this, OriginT.HEAL, SchoolT.SCHOOLS_NATURE, crit, multi);
+        o.applyHeal(heal, target, this, Origin.HEAL, School.NATURE, crit, multi);
         if (o != target) {
-            o.applyHeal(heal, o, this, OriginT.HEAL, SchoolT.SCHOOLS_NATURE,crit, multi);
+            o.applyHeal(heal, o, this, Origin.HEAL, School.NATURE,crit, multi);
         }           
         if (o.cfg.talent_bt) {
             o.buff_bt.activate();

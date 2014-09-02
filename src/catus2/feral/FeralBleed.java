@@ -1,7 +1,8 @@
 package catus2.feral;
 
-import catus2.OriginT;
-import catus2.SchoolT;
+import catus2.Application;
+import catus2.Origin;
+import catus2.School;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 
@@ -15,12 +16,17 @@ public class FeralBleed extends Buff<BuffModel,Feral,FeralView> {
     
     @Override
     public void gotTick(double fraction) {
-        double dmg = getTickDamage() * fraction / v.o.getSnapshotableDamageMod();
-        v.o.applyDamage(dmg, v.unit, this, OriginT.BLEED, SchoolT.SCHOOLS_PHYSICAL, v.o.chanceMeleeCrit());
+        Application app = v.tryApply(this, Origin.BLEED, School.PHYSICAL);
+        app.base = getTickDamage() * fraction / v.o.getSnapshotableDamageMod();
+        v.applyBleed(app);        
     }
     
     public double getTickDamage() {
-        return v.getBleedMod() * snapshot * v.o.getRazorClawsMod() * v.o.getAP() * m.param;        
+        return snapshot * getTickDamage(v.o, m);   
+    }
+    
+    static public double getTickDamage(Feral o, BuffModel m) {
+        return o.getRazorClawsMod() * o.getAP() * m.param;    
     }
     
 }

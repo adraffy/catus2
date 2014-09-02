@@ -1,6 +1,6 @@
 package catus2.feral.generators;
 
-import catus2.AttackT;
+import catus2.Application;
 import catus2.feral.Feral;
 import catus2.feral.FeralView;
 
@@ -11,8 +11,8 @@ public class MoonfireCat extends CatGenerator {
     }
 
     @Override
-    public AttackT generate(FeralView target) {
-        return AttackT.CRIT;
+    public Application generate(FeralView target) {
+        return null;
     }
     
 }

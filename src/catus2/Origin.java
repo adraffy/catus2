@@ -1,12 +1,12 @@
 package catus2;
 
-public enum OriginT {
+public enum Origin {
     WHITE,          // eg. Melee
     MELEE,          // eg. Shred
-    BLEED,          // eg. Rake
+    BLEED,          // eg. Rip
+    MELEE_BLEED,    // eg. Rake (initial)
     SPELL,          // eg. Faerie Fire
-    SPELL_HARM,     // eg. Wrath
-    SPELL_DOT,      // eg. Moonfire
+    DOT,            // eg. Moonfire
     HEAL,           // eg. Healing Touch
-    HEAL_HOT        // eg. Rejuv
+    HOT             // eg. Rejuv
 }

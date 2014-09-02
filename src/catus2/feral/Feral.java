@@ -4,9 +4,9 @@ import catus2.ActivatorSpell;
 import catus2.EnumHelp;
 import catus2.GameHelp;
 import catus2.ModMap;
-import catus2.OriginT;
+import catus2.Origin;
 import catus2.PlayerUnit;
-import catus2.SchoolT;
+import catus2.School;
 import catus2.SpellId;
 import catus2.Unit;
 import catus2.UnitPerc;
@@ -47,7 +47,8 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     public final BuffModel buffModel_ff = new BuffModel(SpellId.Druid.FF);
     
     // bonuses
-    public final BuffModel buffModel_pvp_wod_4pc = new BuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC);
+    public final BuffModel buffModel_bonus_pvp_wod_4pc = new BuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC_DEBUFF);
+    public final BuffModel buffModel_bonus_t17_4pc = new BuffModel(SpellId.Druid.Feral.Set.T17_4PC_DEBUFF);
     
     // bleeds
     public final BuffModel buffModel_rip = new BuffModel(SpellId.Druid.Feral.RIP);
@@ -95,7 +96,7 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     
     @Override
     public int getSP_extra(int schoolIndex) {
-        return super.getSP_extra(schoolIndex) + (schoolIndex == SchoolT.Idx.NATURE ? getStat(UnitStat.AGI, 0) : 0);
+        return super.getSP_extra(schoolIndex) + (schoolIndex == School.Idx.NATURE ? getStat(UnitStat.AGI, 0) : 0);
     }
     
     // ---
@@ -115,8 +116,23 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     
     // ---
         
+    public void bonus_t17_2pc_trigger() {
+        /*
+        Cat thrash, cat rake, cat rip, and t17 4p bonus all proc the energy. 
+        Bear thrash and the new bleed enchant, do NOT proc the energy.
+        3 may be too large of a number, still working through some tuning on these.
+        */
+        if (cfg.bonus_t17_2pc) {
+            power_energy.add(fgd.BONUS_T17_2PC_ENERGY_BONUS);
+        }  
+    }
+    
     public void breakRootsAndSnares() {
         // duh
+    }
+    
+    public void addGeneratedCombo(boolean crit) {
+        power_combos.add(crit && !cfg.disable_primalFury ? 2 : 1);  
     }
     
     public void refundEnergyCost(int cost) {
@@ -331,17 +347,17 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     
     // procs
     
-    public final Trigger<Feral,PPM> trigger_ooc = new Trigger<Feral,PPM>(this, ChanceFactory.PPM, false, EnumHelp.bits(OriginT.MELEE)) {
+    public final Trigger<Feral,PPM> trigger_ooc = new Trigger<Feral,PPM>(this, ChanceFactory.PPM, false, EnumHelp.bits(Origin.MELEE)) {
         @Override
-        public void triggered(OriginT origin, boolean wasCrit) {
+        public void triggered(Origin origin, boolean wasCrit) {
             o.buff_ooc.activate();
         }        
     };
     
-    public final Trigger<Feral,Probability> trigger_lotp = new Trigger<Feral,Probability>(this, ChanceFactory.PROB, true, EnumHelp.bits(OriginT.MELEE)) {
+    public final Trigger<Feral,Probability> trigger_lotp = new Trigger<Feral,Probability>(this, ChanceFactory.PROB, true, EnumHelp.bits(Origin.MELEE)) {
         @Override
-        public void triggered(OriginT origin, boolean wasCrit) {            
-            o.applyHeal_percentHealth(o.fgd.LOTP_PERC_HEALTH, o, "LotP", OriginT.HEAL, SchoolT.SCHOOLS_PHYSICAL);            
+        public void triggered(Origin origin, boolean wasCrit) {            
+            o.applyHeal_percentHealth(o.fgd.LOTP_PERC_HEALTH, o, "LotP", Origin.HEAL, School.PHYSICAL);            
         }        
     };
     
@@ -358,15 +374,24 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
         
         if (!cfg.disable_racials) {
             if (cfg.racial_ne) {
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.NightElf.NATURE_RESISTANCE, 0.99);
                 if (world.nightTime) {
-                    perc_sum[UnitPerc.HASTE].set(SpellId.Racial.TOUCH_OF_ELUNE_NIGHT, fgd.RACIAL_TOUCH_OF_ELUNE_PERC_BONUS);
+                    perc_sum[UnitPerc.HASTE].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_NIGHT, 0.01);
                 } else {
-                    perc_sum[UnitPerc.CRIT].set(SpellId.Racial.TOUCH_OF_ELUNE_DAY, fgd.RACIAL_TOUCH_OF_ELUNE_PERC_BONUS);
+                    perc_sum[UnitPerc.CRIT].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_DAY, 0.01);
                 }
+                perc_sum[UnitPerc.DODGE].set(SpellId.Racial.NightElf.QUICKNESS, 0.02);
             }
             if (cfg.racial_tauren) {
-                
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Tauren.NATURE_RESISTANCE, 0.99);                
+                damageDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
+                healingDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
             }
+            if (cfg.racial_worgen) {
+                perc_sum[UnitPerc.CRIT].set(SpellId.Racial.Worgen.VICIOUSNESS, 0.01);
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+                damageRecv_school_product[School.Idx.SHADOW].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+            }       
         }
         
 
@@ -399,12 +424,11 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
         }
         
         buff_ooc.m.enabled = !cfg.disable_ooc;
-        buff_lotp.m.enabled = !cfg.disable_lotp;
-        
         if (!cfg.disable_ooc) {
             triggerList.add(trigger_ooc);
         }
         
+        buff_lotp.m.enabled = !cfg.disable_lotp;        
         if (!cfg.disable_lotp) {
             triggerList.add(trigger_lotp);
         }
@@ -416,6 +440,13 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
         super.init();
         
         buff_dash.m.default_duration = fgd.DASH_DURATION;
+        
+        buffModel_bonus_pvp_wod_4pc.default_duration = fgd.BONUS_WOD_PVP_4PC_DURATION;
+        buffModel_bonus_pvp_wod_4pc.param = fgd.BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD;
+        
+        buffModel_bonus_t17_4pc.base_frequency = fgd.BONUS_T17_4PC_FREQUENCY;
+        buffModel_bonus_t17_4pc.default_duration = fgd.BONUS_T17_4PC_DURATION;
+        buffModel_bonus_t17_4pc.param = fgd.BONUS_T17_4PC_EXTRA_BLEED_COEFF;
         
         buffModel_ff.unique = true;
         buffModel_ff.default_duration = fgd.FF_DURATION;

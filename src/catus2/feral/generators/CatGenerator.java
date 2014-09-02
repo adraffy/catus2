@@ -1,6 +1,6 @@
 package catus2.feral.generators;
 
-import catus2.AttackT;
+import catus2.Application;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
@@ -21,18 +21,15 @@ public abstract class CatGenerator extends FeralSpell {
     
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        AttackT atk = generate(o.getView(target));
-        if (atk.landed) {                
-            int c = 1;
-            if (atk == AttackT.CRIT && !o.cfg.disable_primalFury) {
-                c++;
-            }
-            o.power_combos.add(c);                
+        Application app = generate(o.getView(target));
+        o.executeApply(app);
+        if (app.hit()) {                
+            o.addGeneratedCombo(app.crit());
         } else {
             o.refundEnergyCost(powerCost);
         }            
     }          
     
-    public abstract AttackT generate(FeralView target);
+    public abstract Application generate(FeralView target);
     
 }

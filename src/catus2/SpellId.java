@@ -2,9 +2,20 @@ package catus2;
 
 public class SpellId {
     static public class Racial {
-        static public final int TOUCH_OF_ELUNE_DAY = 154796;
-        static public final int TOUCH_OF_ELUNE_NIGHT = 154797;
-        
+        static public class NightElf {
+            static public final int TOUCH_OF_ELUNE_DAY = 154796;
+            static public final int TOUCH_OF_ELUNE_NIGHT = 154797;
+            static public final int QUICKNESS = 20582;
+            static public final int NATURE_RESISTANCE = 20583;
+        }        
+        static public class Tauren {
+            static public final int NATURE_RESISTANCE = 20551;
+            static public final int BRAWN = 154743;
+        }
+        static public class Worgen {
+            static public final int ABERRATION = 68976;
+            static public final int VICIOUSNESS = 68975;            
+        }
     }    
     static public class Agi {
         static public final int CRITICAL_STRIKES = 157447;        
@@ -43,8 +54,8 @@ public class SpellId {
                 static public final int T15_4PC_BUFF = 138358; // tiger's fury
                 static public final int T16_2PC_BUFF = 144865; // feral fury
                 static public final int T16_4PC_BUFF = 146874; // feral rage
-                static public final int T17_4PC_BUFF = 166639; // proc driver is the buff?
-                static public final int PVP_WOD_4PC = 165699; // bloodletting
+                static public final int T17_4PC_DEBUFF = 166638; //166639; // proc driver is the buff?
+                static public final int PVP_WOD_4PC_DEBUFF = 165699; // bloodletting
             }
         }
     }

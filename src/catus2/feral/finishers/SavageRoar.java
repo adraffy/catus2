@@ -1,8 +1,11 @@
 package catus2.feral.finishers;
 
-import catus2.feral.Feral;
+import catus2.Application;
+import catus2.Origin;
+import catus2.School;
 import catus2.TargetStyle;
 import catus2.Unit;
+import catus2.feral.Feral;
 
 public class SavageRoar extends CatFinisher {
 
@@ -11,9 +14,9 @@ public class SavageRoar extends CatFinisher {
     }
     
     @Override
-    public boolean finish(Unit target, int energyCost) {       
-        activateWithCombos(o.power_combos.current);
-        return true;
+    public Application finish(Unit target, int energyCost) {       
+        activateWithCombos(o.power_combos.current);        
+        return new Application(o, this, Origin.SPELL, School.PHYSICAL, null);
     }
     
     public void activateWithCombos(int combos) {

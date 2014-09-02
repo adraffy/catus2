@@ -14,4 +14,11 @@ public class AbstractView<O extends Unit> {
         return false;
     }    
     
+    public Application tryApply(Object source, Origin origin, School school) {
+        return tryApply(source, origin, school, o.getCritChance(), 0);
+    }
+    public Application tryApply(Object source, Origin origin, School school, double critChance, int flags) {
+        return o.tryApply(unit, source, origin, school, critChance, flags);
+    }
+    
 }
