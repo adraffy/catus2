@@ -1,6 +1,9 @@
 package catus2;
 
 public class SpellId {
+    static public class Custom {
+        static public final int BASE = -1;
+    }
     static public class Racial {
         static public class NightElf {
             static public final int TOUCH_OF_ELUNE_DAY = 154796;
@@ -17,7 +20,11 @@ public class SpellId {
             static public final int VICIOUSNESS = 68975;            
         }
     }    
-    static public class Agi {
+    static public class Tank {
+        static public final int BLADED_ARMOR = 161608;
+        static public final int RESOLVE = 158298;
+    }
+    static public class DPS_Agility {
         static public final int CRITICAL_STRIKES = 157447;        
     }
     static public class Druid {

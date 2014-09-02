@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
+abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
    
     public final boolean npc;
     
@@ -64,25 +64,32 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     }
     
     public void prepareForCombat() {
-        
+        for (int i = 0; i < UnitPerc.NUM; i++) {
+            perc_sum[i].clear();
+            perc_product[i].clear();
+            perc_rating_product[i].clear();
+        }        
+        perc_sum[UnitPerc.DODGE].set(SpellId.Custom.BASE, 0.03);
+        perc_sum[UnitPerc.PARRY].set(SpellId.Custom.BASE, 0.03);
+        perc_sum[UnitPerc.BLOCK].set(SpellId.Custom.BASE, 0.03);  
     }
     
-    public void resetStatsAndRating() {
-        
-    }
+    // ---
     
-        
     public int getRating(int i) {
-        return (int)(0.5 + perc_rating_product[i].fold() * perc_rating[i] / perc_perRating[i]);
+        int r = perc_rating[i];
+        return r == 0 ? 0 : (int)(0.5 + perc_rating_product[i].fold() * r / perc_perRating[i]);
     }    
-    public double getRatingPercent(int i) {
+    
+    public double getPercent(int i) {
         return (getRating(i) + perc_sum[i].fold()) * perc_product[i].fold();
     }
+    
     public int getStat(int i, double extra) {
         return (int)(0.5 + (stat_raw[i] + extra) * stat_product[i].fold());        
     }
   
-    
+    // ---
     
     int faction;
     
@@ -263,10 +270,6 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     // ---
     
-    public int getBaseSwingTime() {
-        return 1000;
-    }
-    
     public double getHealthMaximum() {
         return GameData.HP_PER_STA * getStat(UnitStat.STA, 0);
     }
@@ -280,6 +283,10 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     }
     
     // ---
+    
+    public int getBaseSwingTime() {
+        return 1000;
+    }
     
     public boolean isBleeding() {
         return true;
@@ -312,8 +319,8 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     
     
-    public int getMasteryRating() {
-        return 0;
+    public double getMastery() {
+        return getPercent(UnitPerc.MASTERY);
     }
     
     public double getHasteMod() {
@@ -325,49 +332,60 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     }
     
     public double getCritChance() {
-        return 0.5;
+        return getPercent(UnitPerc.CRIT);
+    }
+     
+    public double getMultistrikeChance() {
+        return getPercent(UnitPerc.MULTI);
     }
     
     public double getMeleeMissChance() {
-        return 0.03;
+        return 0.03; // deterence?
     }
     
     public double getSpellMissChance() {
         return 0.06;
     }
     
+    public double getSpellReflectChance() {
+        return 0;
+    }
+    
     public double getDodgeChance() {
-        return 0.03;
+        return getPercent(UnitPerc.DODGE); // +0.03;
     }
     
     public double getParryChance() {
-        return 0.03;
+        return getPercent(UnitPerc.PARRY); // +0.03;
     }
     
     public double getBlockChance() {
-        return 0.03;
+        return getPercent(UnitPerc.BLOCK); // +0.03;
     }
     
     public double getHitChance() { 
-        return npc ? 0 : 0.075;
+        return getPercent(UnitPerc.HIT);
     }
     
     public double getExpChance() { 
-        return npc ? 0 : 0.075;
+        return getPercent(UnitPerc.EXP);
     }
     
-    public double getCritHealBonusMod(boolean npc) {
-        return (npc ? 2 : 1.5);
+    public double getCritHealBonusMod() {
+        return 1;
     }
     
+    // this fucking equation again:
+    // 1 + ((crit effect) * (crit effect mods) - 1) * (crit damage mods)
+    // 1 + (2 * (1 + 0.03) - 1) * (1 + 0.2) * (1 + 0.3) 
+    // 
+    // Expand[1 + (a*b - 1)*c*d] == 1 - c d + a b c d
+    // 1 + product(any mod) - product(crit damage mods)
+    // 
     public double getCritDamageBonusMod() {
         return 1;
     }
-        
-    public double getMultistrikeChance() {
-        return 0.1;
-    }
-    
+           
     
     public boolean isStealthed() {
         return false;
@@ -395,9 +413,6 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     //
     
-    static public final int FLAG_CRIT  = 0b0001;
-    static public final int FLAG_MULTI = 0b0010;
-   
     public void applyRawHeal(double base, Unit target, Object source, Origin origin, School school, int flags) {
         
     }
@@ -411,17 +426,17 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         int flags = 0;
         if (world.randomChance(critChance)) {
             //heal *= getCritHealBonusMod(target);
-            flags |= FLAG_CRIT;
+            //flags |= FLAG_CRIT;
         }
         applyRawHeal(heal, target, source, origin, school, flags);
         if (multiChance > 0) {
             for (int i = 0; i < 2; i++) {
                 if (world.randomChance(multiChance)) {
                     heal = base * world.multistrikeDamageMod;
-                    flags = FLAG_MULTI;
+                    //flags = FLAG_MULTI;
                     if (world.randomChance(critChance)) {
                         //heal *= getCritHealBonusMod(target);
-                        flags |= FLAG_CRIT;
+                      //  flags |= FLAG_CRIT;
                     }                    
                     applyRawHeal(heal, target, source, origin, school, flags);
                 }
@@ -459,23 +474,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
             }
         }
     }
-    
-    
-    // ---
-    
-    
-    public double getBlockMod(Unit attacker) {  
-        boolean blocked;
-        if (world.ignoreLocation) {
-            blocked = world.randomChance(attacker.frontTargetChance);
-        } else {
-            double angleToAttacker = angleTo(attacker.world_x, attacker.world_y);
-            double evasionSweep = GameHelp.HALF_PI;
-            blocked = GameHelp.isInsideAngle(angleToAttacker - world_dir, evasionSweep) && world.randomChance(getBlockChance());
-        }        
-        return blocked ? 0.7 : 1;
-    }       
-    
+        
     // -------
     
     public final Power power_combos = new Power();
@@ -553,55 +552,39 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
       
     // ----    
     // fix me: move to AttackTable class or something 
-        
-    // base dodge = 3
-    // base parry = 3
-    // base block = 3
-    // base melee miss = 3
-    // base spell miss = 6
-    // player hit = 7.5
-    // player exp = 7.5
-    // npc hit = 0
-    // npc exp = 0
-    
+  
     // assumed non-negative
     static double getCritSupression(int defenderLevelDelta) {
         return defenderLevelDelta > 0 ? 0.01 * Math.min(defenderLevelDelta, 10) : 0;
     }
-    
-    /*
-    Hit and Expertise has been removed as a secondary stat.
-    Hit and Expertise bonuses on all items and item enhancements (gems, enchants, etc.) have been converted into Critical Strike, Haste, or Mastery.
-    All characters now have a 100% chance to hit, 0% chance to be dodged, 3% chance to be parried, and 0% chance for glancing blows, when fighting creatures up to 3 levels higher (bosses included).
-    Tanking specializations receive an additional 3% reduction in chance to be parried. Tank attacks now have a 0% chance to be parried vs. creatures up to 3 levels higher.
-    Creatures that are 4 or more levels higher than the character still has a chance to avoid attacks in various ways, to discourage fighting enemies that are much stronger.
-    Dual Wielding still imposes a 19% chance to miss, to balance it with two-handed weapon use.
-    */
     
     public Application tryApply(Unit target, Object source, Origin origin, School school) {
         return tryApply(target, source, origin, school, getCritChance(), 0);
     }
     public Application tryApply(Unit target, Object source, Origin origin, School school, double critChance, int flags) {
         double p = world.rng.nextDouble();
-        int LD = target.level - level;          
+        int LD = target.level - level;        
+        boolean isHeal = false;
         boolean isWhite = false; // enable-able via flag?
-        boolean isEvadeable = false; // enable-able via flag?
+        boolean canEvade = false; // enable-able via flag?
         double missChance;
         switch (origin) {
             case HEAL:
+            case HOT:
+                isHeal = true;
             case BLEED:
             case DOT:
-            case HOT:
                 missChance = 0;
                 break;                
             case WHITE:
                 isWhite = true;
             case MELEE:
             case MELEE_BLEED:
-                missChance = target.getMeleeMissChance() + 0.015 * LD + (target.npc ? 0.015 * Math.max(LD - 3, 0) : 0) - getHitChance();
+                canEvade = true;
+                missChance = world.neverMiss ? 0 : target.getMeleeMissChance() + 0.015 * LD + (target.npc ? 0.015 * Math.max(LD - 3, 0) : 0) - getHitChance();
                 break;
             case SPELL:
-                missChance = target.getSpellMissChance() + 0.03 * LD + 0.08 * Math.max(LD - 3, 0) - getHitChance() - getExpChance();
+                missChance = world.neverMiss ? 0 : target.getSpellMissChance() + 0.03 * LD + 0.08 * Math.max(LD - 3, 0) - getHitChance() - getExpChance();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown origin: " + origin);            
@@ -613,7 +596,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
             }
         }        
         boolean inFront = false;
-        if (isEvadeable) {
+        if (canEvade) {
             inFront = inFrontOf(target);
             if (inFront) {
                 if ((flags & Application.CANNOT_BE_DODGED) == 0) {
@@ -637,40 +620,40 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
             }
         }
         Application de = new Application(target, source, origin, school, null);
-        boolean found = false;
-        if (isWhite && target.npc && LD > 3) { // can glance
-            double glanceChance = 0.1 + 0.1 * LD;
-            p -= glanceChance;
-            if (p < 0) {
-                de.scale = 0.75;
-                de.flags |= Application.DID_GLANCE;
-                found = true;
-            }            
-        }
-        if (!found && critChance > 0) { // can crit
-            p -= critChance - getCritSupression(LD);
-            if (p < 0) {
-                de.scale = 2; // crit damage bonus...
-                de.flags |= Application.DID_CRIT;
-                found = true;
+        found: {
+            if (isWhite && target.npc && LD > 3) { // can glance
+                double glanceChance = 0.1 + 0.1 * LD;
+                p -= glanceChance;
+                if (p < 0) {
+                    de.coeff = 0.75;
+                    de.flags |= Application.DID_GLANCE;
+                    break found;
+                }            
             }
-        }
-        if (!found && isWhite && npc && LD < -3) { // can crush
-            double crushChance = -0.15 + -0.1 * LD;
-            p -= crushChance;
-            if (p < 0) {
-                de.scale = 1.5;
-                de.flags |= Application.DID_CRUSH;
-                found = true;
-            }            
-        }        
-        if (inFront && (flags & Application.CANNOT_BE_BLOCKED) == 0) { // can dodge (second roll)
+            if (critChance > 0) { // can crit
+                p -= critChance - getCritSupression(LD);
+                if (p < 0) {
+                    de.coeff = isHeal ? getCritHealBonusMod() : getCritDamageBonusMod();
+                    de.flags |= Application.DID_CRIT;
+                    break found;
+                }
+            }
+            if (isWhite && npc && LD < -3) { // can crush
+                double crushChance = -0.15 + -0.1 * LD;
+                p -= crushChance;
+                if (p < 0) {
+                    de.coeff = 1.5;
+                    de.flags |= Application.DID_CRUSH;
+                    break found;
+                }            
+            }        
+        }    
+        if (inFront && (flags & Application.CANNOT_BE_BLOCKED) == 0) { // can block (second roll)
             double blockChance = getBlockChance() + 0.015 * LD; 
             if (world.randomChance(blockChance)) {
-                de.scale *= 0.7;
                 de.flags |= Application.DID_BLOCK;
             }
-        }        
+        }   
         return de;
     }
     
@@ -683,7 +666,7 @@ public abstract class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
             
             
         } else {
-            double damage = app.base * app.scale;
+            double damage = app.base * app.coeff;
             
         }
         

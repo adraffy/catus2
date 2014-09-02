@@ -9,4 +9,7 @@ public enum Origin {
     DOT,            // eg. Moonfire
     HEAL,           // eg. Healing Touch
     HOT             // eg. Rejuv
+    
+    // fuck, where do i put SPELL_AOE, SPELL_TARGETED 
+    // maybe source instanceof Spell and target type...
 }

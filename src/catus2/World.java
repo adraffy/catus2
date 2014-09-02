@@ -12,15 +12,16 @@ public class World {
     public double multistrikeDamageMod = 0.3;
     public boolean randomDamageRanges = true;
     public boolean ignoreLocation;
+    public boolean neverMiss;
     
+    // put these somewhere else
     public int RANGE_SELF = 0;
     public int RANGE_COMBAT = 5;
     public int RANGE_SHORTER = 8;
     public int RANGE_SHORT = 20;
     public int RANGE_MEDIUM = 30;
     public int RANGE_LONG = 40;
-    public int RANGE_VISION = 100;
-    
+    public int RANGE_VISION = 100;    
     public int GCD_FLOOR = 1000;
     public int GCD_SPELL = 1500;
     //public int GCD_ENERGY = 1000;

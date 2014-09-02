@@ -1,6 +1,6 @@
 package catus2;
 
-public class Application {
+public final class Application {
     
     static public final int CANNOT_BE_DODGED  = 0b0001;
     static public final int CANNOT_BE_PARRIED = 0b0010;
@@ -19,7 +19,7 @@ public class Application {
     public final School school;
     
     public double base;    
-    public double scale = 1;
+    public double coeff = 1;
 
     // public boolean canMultistrike; // NYI
     
@@ -36,9 +36,12 @@ public class Application {
         return missType == null;
     }
     
-    public final boolean crit() {
-        return (flags & DID_CRIT) == DID_CRIT;
+    public final boolean checkFlag(int flag) {
+        return (flags & flag) == flag;
     }
+    
+    public final boolean crit()     { return checkFlag(DID_CRIT);  }    
+    public final boolean blocked()  { return checkFlag(DID_BLOCK); }
     
     public final boolean heal() {
         switch (origin) {
@@ -48,6 +51,10 @@ public class Application {
         }
         return false;
     }
+    
+    public final double amount() {
+        return coeff * base * (blocked() ? 0.7 : 1);
+    }    
         
     public Application(Unit target, Object source, Origin origin, School school, MissType missType) {
         this.source = source;

@@ -64,8 +64,7 @@ public class FeralGameData {
     public int THRASH_BEAR_FREQUENCY = 2000;
     public int THRASH_BEAR_DURATION = 16000;
     
-    public int CAT_MASTERY_RATING_OFFSET = 880;
-    public double CAT_MASTERY_RATING_PER_MOD = 3514.5;
+    public double CAT_MASTERY_PER_DAMAGE_MOD = 3514.5;
     
     public double BT_DAMAGE_MOD = 1.3;
     public int BT_CHARGES = 2;

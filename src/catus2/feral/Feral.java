@@ -107,11 +107,11 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     Attack Power, Spell Power, or Weapon Damage now affect the entire healing or damage throughput of player spells.
     */
     public double getNormalizedWeaponDamage() {
-        return 1 + getAP() / 14D; // + weaponDPS, +weaponDmg
+        return 1 + getAP() / 3.5D; // + weaponDPS, +weaponDmg
     }
     
     public double getRazorClawsMod() {
-        return 1 + (fgd.CAT_MASTERY_RATING_OFFSET + getMasteryRating()) / fgd.CAT_MASTERY_RATING_PER_MOD;
+        return 1 + getMastery() / fgd.CAT_MASTERY_PER_DAMAGE_MOD;
     }
     
     // ---
@@ -367,7 +367,7 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
     public void prepareForCombat() {
         super.prepareForCombat();
         
-        perc_sum[UnitPerc.CRIT].set(SpellId.Agi.CRITICAL_STRIKES, fgd.CRITICAL_STRIKES_CRIT_BONUS);
+        perc_sum[UnitPerc.CRIT].set(SpellId.DPS_Agility.CRITICAL_STRIKES, fgd.CRITICAL_STRIKES_CRIT_BONUS);
         perc_rating_product[UnitPerc.CRIT].set(SpellId.Druid.Feral.SHARPENED_CLAWS, fgd.SHARPENED_CLAWS_CRIT_MOD);
         
         stat_product[UnitStat.AGI].set(SpellId.Druid.Feral.LEATHER_SPECIALIZATION, fgd.LEATHER_SPECIALIZATION_AGI_MOD);

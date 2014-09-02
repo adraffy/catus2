@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class ModMap {
     
-    static final int INIT_CAP = 5;
+    static final int INIT_CAP = 8; // ?
     static final int NULL_KEY = 0;
     
     public final boolean product;
@@ -21,6 +21,10 @@ public class ModMap {
     
     public ModMap(boolean product) {
         this.product = product;
+        clear();
+    }
+    
+    public void clear() {
         for (int i = 0; i < free.length; i++) {
             free[i] = i;
         }        

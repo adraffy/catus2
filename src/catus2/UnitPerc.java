@@ -13,7 +13,9 @@ public class UnitPerc {
     static public final int DODGE   = 7;
     static public final int PARRY   = 8;
     static public final int BLOCK   = 9;
-    static public final int NUM     = 10; // be right, don't be wrong
+    static public final int HIT     = 10;
+    static public final int EXP     = 11;
+    static public final int NUM     = 12; // be right, don't be wrong
 
     public final int index;
     public final String longName;
@@ -37,7 +39,12 @@ public class UnitPerc {
             case MULTI:     return new UnitPerc(i, "Multistrike|Multi");
             case VERSA:     return new UnitPerc(i, "Versatility|Versa");
             case LEECH:     return new UnitPerc(i, "Leech");
-            case AVOID:     return new UnitPerc(i, "Avoidance|Avoid");            
+            case AVOID:     return new UnitPerc(i, "Avoidance|Avoid");    
+            case DODGE:     return new UnitPerc(i, "Dodge");
+            case PARRY:     return new UnitPerc(i, "Parry");
+            case BLOCK:     return new UnitPerc(i, "Block");
+            case HIT:       return new UnitPerc(i, "Hit");
+            case EXP:       return new UnitPerc(i, "Expertise|Exp");
             default: throw new IllegalArgumentException();
         }
     }    
