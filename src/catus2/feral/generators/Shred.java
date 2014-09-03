@@ -26,9 +26,9 @@ public class Shred extends CatGenerator {
             crit += crit;            
         }                     
         boolean bt = o.buff_bt.tryConsume();
-        Application app = o.tryApply(target.unit, this, Origin.MELEE, School.PHYSICAL);
+        Application app = o.tryApply(target.u, this, Origin.MELEE, School.PHYSICAL);
         if (app.hit()) {                
-            if (target.unit.isBleeding()) {
+            if (target.u.isBleeding()) {
                 mod *= o.fgd.SHRED_SWIPE_BLEED_BONUS;
             }     
             if (o.cfg.bonus_t14_2pc) {

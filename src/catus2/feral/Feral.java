@@ -3,11 +3,13 @@ package catus2.feral;
 import catus2.ActivatorSpell;
 import catus2.EnumHelp;
 import catus2.GameHelp;
+import catus2.HitEvent;
 import catus2.ModMap;
 import catus2.Origin;
 import catus2.PlayerUnit;
 import catus2.School;
 import catus2.SpellId;
+import catus2.SpellModel;
 import catus2.Unit;
 import catus2.UnitPerc;
 import catus2.UnitStat;
@@ -34,9 +36,9 @@ import catus2.feral.spells.TigersFury;
 import catus2.feral.talents.Incarnation;
 import catus2.procs.Trigger;
 
-public class Feral extends PlayerUnit<Feral,FeralView> {
+public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     
-    public FeralConfig cfg;
+    
     public FeralGameData fgd;
     
     // buffs/debuffs
@@ -360,6 +362,21 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
             o.applyHeal_percentHealth(o.fgd.LOTP_PERC_HEALTH, o, "LotP", Origin.HEAL, School.PHYSICAL);            
         }        
     };
+
+    @Override
+    public void didDamage(HitEvent hit) {
+        super.didDamage(hit);
+        if (cfg.bonus_t17_4pc && buff_berserk_cat.isActive()) { 
+            switch (hit.spell.id) {
+                case SpellId.Druid.Feral.RAKE_DOT:
+                case SpellId.Druid.Feral.FB:
+                case SpellId.Druid.Feral.RIP:
+                case SpellId.Druid.THRASH_CAT:
+                case SpellId.Druid.SHRED:
+                    getView(hit.target).dot_bonus_t17_4pc.accumulate(hit.computed);
+            }
+        }                       
+    }
     
     // -- 
     
@@ -372,28 +389,7 @@ public class Feral extends PlayerUnit<Feral,FeralView> {
         
         stat_product[UnitStat.AGI].set(SpellId.Druid.Feral.LEATHER_SPECIALIZATION, fgd.LEATHER_SPECIALIZATION_AGI_MOD);
         
-        if (!cfg.disable_racials) {
-            if (cfg.racial_ne) {
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.NightElf.NATURE_RESISTANCE, 0.99);
-                if (world.nightTime) {
-                    perc_sum[UnitPerc.HASTE].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_NIGHT, 0.01);
-                } else {
-                    perc_sum[UnitPerc.CRIT].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_DAY, 0.01);
-                }
-                perc_sum[UnitPerc.DODGE].set(SpellId.Racial.NightElf.QUICKNESS, 0.02);
-            }
-            if (cfg.racial_tauren) {
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Tauren.NATURE_RESISTANCE, 0.99);                
-                damageDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
-                healingDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
-            }
-            if (cfg.racial_worgen) {
-                perc_sum[UnitPerc.CRIT].set(SpellId.Racial.Worgen.VICIOUSNESS, 0.01);
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
-                damageRecv_school_product[School.Idx.SHADOW].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
-            }       
-        }
-        
+      
 
     }
     

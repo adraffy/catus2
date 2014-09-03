@@ -43,6 +43,8 @@ public final class Application {
     public final boolean crit()     { return checkFlag(DID_CRIT);  }    
     public final boolean blocked()  { return checkFlag(DID_BLOCK); }
     
+    // maybe we could use sign? 
+    // can't distiguish immune heal from immune damage
     public final boolean heal() {
         switch (origin) {
             case HEAL:

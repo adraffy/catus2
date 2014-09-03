@@ -42,7 +42,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
         timeline().cancel(duration_fader);
         timeline().cancel(tick_fader);
         if (m.unique) {
-            v.unit.uniqueBuffMap.remove(m.id);
+            v.u.uniqueBuffMap.remove(m.id);
         }
         gotDeactivated();
     }
@@ -64,7 +64,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
             throw new IllegalStateException("Duration: " + duration);
         }        
         if (m.unique) {
-            Buff buff = (Buff)v.unit.uniqueBuffMap.put(m.id, this); // java generics bug
+            Buff buff = (Buff)v.u.uniqueBuffMap.put(m.id, this); // java generics bug
             if (buff != null && buff != this) {
                 buff.cancel();
             }
@@ -148,7 +148,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
     public final Tick duration_fader = new Tick() {
         @Override
         public void run() {
-            if (timeline().cancel(tick_fader) && !v.unit.isDead()) {
+            if (timeline().cancel(tick_fader) && !v.u.isDead()) {
                 ++tick_index;
                 gotTick((timeline().clock - last_clock) / last_frequency);
             }      
@@ -160,7 +160,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
     public final Tick tick_fader = new Tick() {
         @Override
         public void run() {
-            if (v.unit.isDead()) {
+            if (v.u.isDead()) {
                 return;
             }
             ++tick_index;

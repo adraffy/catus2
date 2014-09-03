@@ -18,7 +18,7 @@ public class FeralBleed extends Buff<BuffModel,Feral,FeralView> {
     public void gotTick(double fraction) {
         Application app = v.tryApply(this, Origin.BLEED, School.PHYSICAL);
         app.base = getTickDamage() * fraction / v.o.getSnapshotableDamageMod();
-        v.applyBleed(app);        
+        v.executeBleed(app);        
     }
     
     public double getTickDamage() {

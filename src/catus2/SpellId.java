@@ -43,6 +43,9 @@ public class SpellId {
         static public final int PROWL = 5215;        
         static public final int LOTP = 17007;    
         static public final int FF = 770;
+        static public final int WRATH = 5176;
+        static public final int SHRED = 5221;
+        static public final int FB = 22568;
         static public class Feral {
             static public final int TF = 5217;    
             static public final int SR = 62071;    
@@ -61,7 +64,7 @@ public class SpellId {
                 static public final int T15_4PC_BUFF = 138358; // tiger's fury
                 static public final int T16_2PC_BUFF = 144865; // feral fury
                 static public final int T16_4PC_BUFF = 146874; // feral rage
-                static public final int T17_4PC_DEBUFF = 166638; //166639; // proc driver is the buff?
+                static public final int T17_4PC_DEBUFF = 166638; // gushing, 166639; // proc driver is the buff?
                 static public final int PVP_WOD_4PC_DEBUFF = 165699; // bloodletting
             }
         }

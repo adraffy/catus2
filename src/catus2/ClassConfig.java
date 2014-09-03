@@ -11,7 +11,8 @@ public class ClassConfig {
     public boolean racial_tauren;   // +2% crit damage/healing, endurance (stam), -1% nature damage, war stomp, +15 herb
     public boolean racial_troll;    // berserking 15%, -15% slows, +10% hp regen, 10% hp regen in combat
     
-    // bonuses
+    // bonuses 
+    // (this probably wont work being shared)
     public boolean bonus_t13_2pc; // ds
     public boolean bonus_t13_4pc;
     public boolean bonus_t14_2pc; // mv/hof/toes

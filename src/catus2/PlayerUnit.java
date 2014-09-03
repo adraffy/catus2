@@ -1,7 +1,9 @@
 package catus2;
 
-abstract public class PlayerUnit<O extends Unit<O,V>,V extends AbstractView<O>> extends Unit<O,V> {
+abstract public class PlayerUnit<O extends Unit<O,V>,V extends AbstractView<O>,C extends ClassConfig> extends Unit<O,V> {
         
+    public C cfg;
+    
     public PlayerUnit() {
         super(false);
     }
@@ -29,9 +31,32 @@ abstract public class PlayerUnit<O extends Unit<O,V>,V extends AbstractView<O>> 
     @Override
     public void prepareForCombat() {
         super.prepareForCombat();
+        
         perc_sum[UnitPerc.HIT].set(SpellId.Custom.BASE, 0.075);            
         perc_sum[UnitPerc.EXP].set(SpellId.Custom.BASE, 0.075); // +0.03 for tanks                  
         perc_sum[UnitPerc.MASTERY].set(SpellId.Custom.BASE, 0.10); // +880
+        
+        if (!cfg.disable_racials) {
+            if (cfg.racial_ne) {
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.NightElf.NATURE_RESISTANCE, 0.99);
+                if (world.nightTime) {
+                    perc_sum[UnitPerc.HASTE].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_NIGHT, 0.01);
+                } else {
+                    perc_sum[UnitPerc.CRIT].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_DAY, 0.01);
+                }
+                perc_sum[UnitPerc.DODGE].set(SpellId.Racial.NightElf.QUICKNESS, 0.02);
+            }
+            if (cfg.racial_tauren) {
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Tauren.NATURE_RESISTANCE, 0.99);                
+                damageDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
+                healingDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
+            }
+            if (cfg.racial_worgen) {
+                perc_sum[UnitPerc.CRIT].set(SpellId.Racial.Worgen.VICIOUSNESS, 0.01);
+                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+                damageRecv_school_product[School.Idx.SHADOW].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+            }       
+        }
         
     }
     

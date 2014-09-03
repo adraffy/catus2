@@ -1,16 +1,18 @@
 package catus2.feral.spells;
 
 import catus2.AbstractSpell;
-import catus2.Application;
-import catus2.Origin;
+import catus2.HitEvent;
 import catus2.School;
+import catus2.SpellId;
+import catus2.SpellModel;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
-import catus2.feral.FeralView;
 
 public class FaerieFire extends AbstractSpell<Feral> {
 
+    static public final SpellModel SPELL = new SpellModel(SpellId.Druid.FF, "Faerie Fire", School.NATURE);
+    
     /*
     Faerie Fire
     35 yd range
@@ -26,15 +28,16 @@ public class FaerieFire extends AbstractSpell<Feral> {
     }
 
     @Override
-    public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        Application app = o.tryApply(target, this, Origin.SPELL, School.PHYSICAL, 0, 0);
-        if (app.hit()) {                
-            if (o.isBearForm()) {                                    
-                app.base = o.getAP() * o.fgd.FF_BEAR_DAMAGE_PER_AP;                    
+    public void casted(Unit target, double x, double y, int castTime, int powerCost) {      
+        boolean damaging = o.isBearForm(); 
+        HitEvent hit = HitEvent.harm(m, o, target, damaging ? o.getCritChance() : 0, true, true);
+        if (hit.landed()) {
+            if (damaging) {
+                hit.base = o.getAP() * o.fgd.FF_BEAR_DAMAGE_PER_AP;   
             }
-            o.getView(target).debuff_ff.activate();        
+            o.getView(hit.target).debuff_ff.activate();   
         }
-        o.executeApply(app);
+        o.computeAndRecord(hit);
     }        
 
 }

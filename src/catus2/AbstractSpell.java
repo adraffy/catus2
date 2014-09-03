@@ -6,6 +6,7 @@ public abstract class AbstractSpell<O extends Unit> {
     public final TargetStyle targetStyle;
     public boolean harm;
     public double range_sweep;
+    public SpellModel m;
     
     public int schoolMask;
     
@@ -207,7 +208,7 @@ public abstract class AbstractSpell<O extends Unit> {
                 }   
                 return checkRange(target.world_x, target.world_y);
             }
-            case LOCATION: {
+            case TARGETED_LOCATION: {
                 return checkRange(x, y);
             }
             default:
@@ -280,6 +281,15 @@ public abstract class AbstractSpell<O extends Unit> {
     
     public void channelTicked() {}
 
+    
+    
+    public void simpleSpellDamage(Unit target, double coeff) {
+        HitEvent hit = HitEvent.harm(m, o, target, o.getCritChance(), true, true);
+        if (hit.landed()) {
+            hit.base = o.getSP(m.school) * coeff;
+        }
+        o.computeAndRecord(hit);
+    }
     
     
 }

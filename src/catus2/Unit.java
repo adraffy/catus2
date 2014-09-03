@@ -347,9 +347,18 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         return 0.06;
     }
     
+    /*
     public double getSpellReflectChance() {
         return 0;
     }
+    */
+    
+    public boolean canSpellReflect(Unit caster, School school) {
+        // consume charges
+        // check school
+        return false;
+    }
+    
     
     public double getDodgeChance() {
         return getPercent(UnitPerc.DODGE); // +0.03;
@@ -553,10 +562,42 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     // ----    
     // fix me: move to AttackTable class or something 
   
+    public void computeAndRecord(HitEvent hit) {
+        // normalize it
+        
+        if (hit.landed()) {            
+            
+            hit.computed = hit.base * hit.caster.getDamageDoneMod(hit.spell.school);
+            
+            // we need to intercept this
+            
+            hit.computed *= hit.target.getDamageTakenMod(hit.spell.school);
+            
+            
+        } else {
+            hit.computed = 0;
+        }    
+    }
+    
+    
+    public void record(HitEvent hit) {
+        
+    }
+    
+    
+    public void didDamage(HitEvent hit) {
+        System.out.println(String.format("[%s] %s %s [%s] %.0f %s", hit.caster, hit.spell.getNameAndId(), "hit", hit.target, hit.computed, hit.spell.school));
+    }
+    
+    
     // assumed non-negative
     static double getCritSupression(int defenderLevelDelta) {
         return defenderLevelDelta > 0 ? 0.01 * Math.min(defenderLevelDelta, 10) : 0;
     }
+    
+    
+    
+    
     
     public Application tryApply(Unit target, Object source, Origin origin, School school) {
         return tryApply(target, source, origin, school, getCritChance(), 0);
@@ -656,21 +697,22 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
         }   
         return de;
     }
-    
-    
-    // these args suck...
-    // need access to crit
-    public void executeApply(Application app) {
         
+    public void executeApply(Application app) {  
+        double amount = app.amount();
         if (app.heal()) {
             
             
         } else {
             double damage = app.base * app.coeff;
             
-        }
-        
+        }  
+        /*if (app.canMultistrike) {
+            double base = app.base * world.multistrikeCoeff;
+            for (int i = 0; i < 2; i++) { 
+                //...
+            }
+        }*/
     }
-    
     
 }

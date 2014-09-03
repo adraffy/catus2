@@ -52,6 +52,7 @@ public class FeralGameData {
     
     public int WRATH_CAST = 2000;
     public double WRATH_COST = 0.088;
+    public double WRATH_DAMAGE_PER_SP = 1.3;
     
     public double THRASH_CAT_TICK_DAMAGE_PER_AP = 0.113886;
     public double THRASH_CAT_INITIAL_TICK_MOD = 1.4;    

@@ -3,12 +3,16 @@ package catus2.feral.finishers;
 import catus2.Application;
 import catus2.Origin;
 import catus2.School;
+import catus2.SpellId;
+import catus2.SpellModel;
 import catus2.Unit;
 import catus2.feral.Feral;
 import catus2.feral.FeralBleed;
 
 public class Rip extends CatFinisher.Offensive {
 
+    static public final SpellModel RIP = new SpellModel(SpellId.Druid.Feral.RIP, "Rip", School.PHYSICAL);
+    
     public Rip(Feral owner) {
         super(owner);
     }

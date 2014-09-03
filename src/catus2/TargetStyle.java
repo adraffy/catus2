@@ -2,6 +2,7 @@ package catus2;
 
 public enum TargetStyle {
     NONE,
-    LOCATION,
+    CURRENT_LOCATION,
+    TARGETED_LOCATION,
     UNIT
 }
