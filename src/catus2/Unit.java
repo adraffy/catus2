@@ -17,7 +17,7 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public final ModMap spellPower_product = new ModMap.Product();
     
-    public final IntSet incomingDamageImmune_school_set = new IntSet();
+    public final IntSet[] incomingDamageImmune_school_set;
     public final ModMap incomingDamageMod_all_product = new ModMap.Product();
     public final ModMap[] incomingDamageMod_school_product;
     
@@ -55,8 +55,10 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public Unit(boolean npc) {
         this.npc = npc;
         damageDone_school_product = new ModMap[School.Idx.N];    
+        incomingDamageImmune_school_set = new IntSet[School.Idx.N];
         incomingDamageMod_school_product = new ModMap[School.Idx.N];
         for (int i = 0; i < School.Idx.N; i++) {
+            incomingDamageImmune_school_set[i] = new IntSet();
             damageDone_school_product[i] = new ModMap.Product();
             incomingDamageMod_school_product[i] = new ModMap.Product();
         }         
@@ -294,6 +296,15 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     // ---
         
     public boolean isBleeding() {
+        return true;
+    }
+    
+    public boolean isImmuneTo(School school) {
+        for (int i : school.indexes) {            
+            if (incomingDamageImmune_school_set[i].empty()) {
+                return false;
+            }
+        }
         return true;
     }
     

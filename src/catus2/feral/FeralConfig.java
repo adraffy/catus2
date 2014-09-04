@@ -63,10 +63,8 @@ public class FeralConfig extends ClassConfig {
     public boolean talent_nv;
     
     // 100
-    boolean talent_li;
+    public boolean talent_li;
     public boolean talent_bt;
-    boolean talent_cos;
-    
-    
+    public boolean talent_cos;
     
 }

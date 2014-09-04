@@ -20,9 +20,12 @@ public class AttackTable {
     static public final int DODGE   = 1;
     static public final int PARRY   = 2;
     static public final int CRIT    = 3;
-    static public final int HIT     = 4;      
-    static public final int CRUSH   = 5; // don't think these are worth implementing
-    static public final int GLANCE  = 6; // since they only apply outside of [-3,+3]
+    static public final int HIT     = 4; 
+    static public final int IMMUNE  = 5;
+    
+    //static public final int CRUSH   = 5; // don't think these are worth implementing
+    //static public final int GLANCE  = 6; // since they only apply outside of [-3,+3]
+    
     
     // extra bits
     static public final int TYPE_MASK   = 0b000111; // Ceiling@Log2[1+( 5 )] => 3 bits  

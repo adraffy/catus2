@@ -14,6 +14,9 @@ public class IntSet {
         num = 0;
     }
     
+    public boolean any() { return num > 0; }
+    public boolean empty() { return num == 0; }
+    
     public boolean add(int key) {
         int i = Arrays.binarySearch(keys, 0, num, key);
         if (i >= 0) {

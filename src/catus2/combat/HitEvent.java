@@ -11,6 +11,7 @@ public class HitEvent {
     public final Unit target;
     public final int result; 
     public final double mod;
+    
     public double computed;
     public double base;
     
@@ -23,10 +24,12 @@ public class HitEvent {
     }
 
     public boolean success() { return AttackTable.success(result); }
-    public boolean crit()   { return AttackTable.isType(result, AttackTable.CRIT); }
+    public boolean crit()    { return AttackTable.isType(result, AttackTable.CRIT); }
         
     static public HitEvent melee(SpellData model, Unit caster, Unit target, double critChance, int options) {
-        
+        if (target.isImmuneTo(model.school)) {
+            return new HitEvent(model, caster, target, AttackTable.IMMUNE);
+        }
         return new HitEvent(model, caster, target, AttackTable.melee(caster, target, critChance, options));
     }
     
@@ -42,16 +45,12 @@ public class HitEvent {
         return new HitEvent(spell, caster, target, AttackTable.spell(caster, target, critChance, false));
     }
     
-    static public HitEvent harm(SpellData spell, Unit caster, Unit target, double critChance, boolean canMiss, boolean canReflect) {        
-        int result = AttackTable.spell(caster, target, critChance, canMiss);
-        if (canReflect && AttackTable.success(result) && target.canSpellReflect(caster, spell.school)) {            
-            result = AttackTable.spell(caster, caster, critChance, canMiss) | AttackTable.REFLECT_BIT;
-            target = caster;
-        }        
-        return new HitEvent(spell, caster, target, result);
+    static public HitEvent harm(SpellData spell, Unit caster, Unit target, double critChance, boolean canMiss, boolean canReflect) {     
+        if (canReflect && target.canSpellReflect(caster, spell.school)) {            
+            return new HitEvent(spell, caster, caster, AttackTable.spell(caster, caster, critChance, canMiss) | AttackTable.REFLECT_BIT);
+        } else {
+            return new HitEvent(spell, caster, target, AttackTable.spell(caster, target, critChance, canMiss));        
+        }
     }
-    
-   
-    
-    
+        
 }

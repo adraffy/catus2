@@ -34,7 +34,7 @@ public class FeralView extends AbstractView<Feral> {
         dot_thrash_cat = new FeralBleed(o.buffModel_thrash_cat, this);
         dot_bonus_t17_4pc = new AccumulateBuff<BuffModel,Feral,FeralView>(o.buffModel_bonus_t17_4pc, this) {
             @Override
-            public void gotTickPortion(double amount) {
+            public void gotChunk(double amount) {
                 o.trigger_bonus_t17_2pc();   
                 HitEvent event = periodic(0); 
                 event.base = o.getRazorClawsMod() * amount;                       

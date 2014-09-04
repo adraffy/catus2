@@ -1,11 +1,7 @@
 package catus2.feral.finishers;
 
-import catus2.Application;
 import catus2.combat.CrowdControl;
 import catus2.combat.HitEvent;
-import catus2.School;
-import catus2.SpellId;
-import catus2.SpellData;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
