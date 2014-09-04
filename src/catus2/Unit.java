@@ -35,9 +35,6 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public final int[] cc_stackCount = new int[CrowdControl.N];
     
     
-    static final BuffModel buffModel_stunned = new BuffModel(-1);
-    static final BuffModel buffModel_silenced = new BuffModel(-1);
-    
     public final ModMap[] stat_product;
     public final int[] stat_raw;
     

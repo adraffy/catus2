@@ -4,10 +4,6 @@ import catus2.Unit;
 
 public class AttackTable {
     
-    static double getCritSupression(int LD) {
-        return LD > 0 ? 0.01 * Math.min(LD, 10) : 0;
-    }
-    
     // melee flags
     static public final int CANNOT_MISS  = 0b0001;
     static public final int CANNOT_DODGE = 0b0010;
@@ -24,21 +20,15 @@ public class AttackTable {
     static public final int DODGE   = 1;
     static public final int PARRY   = 2;
     static public final int CRIT    = 3;
-    static public final int HIT     = 4;  
-    
+    static public final int HIT     = 4;      
     static public final int CRUSH   = 5; // don't think these are worth implementing
     static public final int GLANCE  = 6; // since they only apply outside of [-3,+3]
     
+    // extra bits
     static public final int TYPE_MASK   = 0b000111; // Ceiling@Log2[1+( 5 )] => 3 bits  
-    static public final int HIT_BIT     = 0b001000;
+    static public final int SUCCESS_BIT = 0b001000;
     static public final int BLOCK_BIT   = 0b010000;
     static public final int REFLECT_BIT = 0b100000; // external to this logic since it requires target change
-    
-
-    
-    static public boolean landed(int bits) {
-        return (bits & HIT_BIT) == HIT_BIT;
-    }
     
     static public int getType(int bits) {
         return bits & TYPE_MASK;
@@ -48,21 +38,13 @@ public class AttackTable {
         return getType(bits) == type;
     }
     
-    static public double getTypeMod(int bits) {
-        int type = getType(bits);
-        if (type < GLANCE) {
-            return 0;
-        }
-        double mod = (BLOCK_BIT & bits) == BLOCK_BIT ? BLOCK_MOD : 1;
-        if (type == GLANCE) {
-            return mod * GLANCE_MOD;
-        } else if (type == CRUSH) {
-            return mod * CRUSH_MOD;
-        } else {
-            return mod;
-        }
+    static public boolean success(int bits) { return (bits & SUCCESS_BIT) == SUCCESS_BIT; }        
+    static public boolean blocked(int bits) { return (bits & BLOCK_BIT) == BLOCK_BIT; }
+    
+    static double getCritSupression(int LD) {
+        return LD > 0 ? 0.01 * Math.min(LD, 10) : 0;
     }
-   
+    
     static public int melee(Unit caster, Unit target, double critChance, /*boolean isWhite,*/ int options) {
         double p = caster.world.rng.nextDouble();
         int LD = target.level - caster.level;  
@@ -123,7 +105,7 @@ public class AttackTable {
             }
         }
         */
-        int bits = critChance > 0 && critChance - getCritSupression(LD) < p ? (CRIT | HIT_BIT) : (HIT | HIT_BIT);
+        int bits = critChance > 0 && critChance - getCritSupression(LD) < p ? (CRIT | SUCCESS_BIT) : (HIT | SUCCESS_BIT);
         if (inFront && (options & CANNOT_BLOCK) == 0) { // can block (second roll)
             double blockChance = target.getBlockChance() + 0.015 * LD;
             if (caster.world.randomChance(blockChance)) {
@@ -134,8 +116,7 @@ public class AttackTable {
     }
     
     //static public int periodic(Unit caster, Unit target, double critChance) { return spell(caster, target, critChance, false); }    
-    //static public int heal(Unit caster, Unit target, double critChance) { return spell(caster, target, critChance, false); }    
-    
+    //static public int heal(Unit caster, Unit target, double critChance) { return spell(caster, target, critChance, false); }        
     static public int spell(Unit caster, Unit target, double critChance, boolean canMiss) {
         int LD = target.level - caster.level;  
         if (canMiss) {
@@ -144,6 +125,6 @@ public class AttackTable {
                 return MISS;
             }
         }
-        return caster.world.randomChance(critChance - getCritSupression(LD)) ? (CRIT | HIT_BIT) : (HIT | HIT_BIT);
+        return caster.world.randomChance(critChance - getCritSupression(LD)) ? (CRIT | SUCCESS_BIT) : (HIT | SUCCESS_BIT);
     }
 }

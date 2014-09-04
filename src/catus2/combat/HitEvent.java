@@ -22,7 +22,7 @@ public class HitEvent {
         mod = success() ? crit() ? caster.getCritDamageBonusMod() : 1 : 0;
     }
 
-    public boolean success() { return AttackTable.landed(result); }
+    public boolean success() { return AttackTable.success(result); }
     public boolean crit()   { return AttackTable.isType(result, AttackTable.CRIT); }
         
     static public HitEvent melee(SpellData model, Unit caster, Unit target, double critChance, int options) {
@@ -44,7 +44,7 @@ public class HitEvent {
     
     static public HitEvent harm(SpellData spell, Unit caster, Unit target, double critChance, boolean canMiss, boolean canReflect) {        
         int result = AttackTable.spell(caster, target, critChance, canMiss);
-        if (canReflect && AttackTable.landed(result) && target.canSpellReflect(caster, spell.school)) {            
+        if (canReflect && AttackTable.success(result) && target.canSpellReflect(caster, spell.school)) {            
             result = AttackTable.spell(caster, caster, critChance, canMiss) | AttackTable.REFLECT_BIT;
             target = caster;
         }        
