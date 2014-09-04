@@ -11,8 +11,6 @@ import catus2.Unit;
 import catus2.feral.Feral;
 
 public class SavageRoar extends CatFinisher {
-    
-    static public final SpellData SPELL = new SpellData(SpellId.Druid.Feral.SR, "Savage Roar", School.PHYSICAL);
 
     public SavageRoar(Feral owner) {
         super(owner, TargetStyle.NONE);

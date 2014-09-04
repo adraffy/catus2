@@ -11,9 +11,7 @@ import catus2.feral.Feral;
 import catus2.feral.FeralBleed;
 
 public class FerociousBite extends CatFinisher.Offensive {
-    
-    static public final SpellData SPELL = new SpellData(SpellId.Druid.FB, "Ferocious Bite", School.PHYSICAL);
-    
+
     public FerociousBite(Feral owner) {
         super(owner);
     }

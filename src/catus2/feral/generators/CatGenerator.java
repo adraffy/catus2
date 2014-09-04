@@ -4,7 +4,6 @@ import catus2.combat.HitEvent;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
-import catus2.feral.FeralView;
 import catus2.feral.spells.FeralSpell;
 
 public abstract class CatGenerator extends FeralSpell {
