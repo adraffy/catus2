@@ -3,16 +3,17 @@ package catus2.feral;
 import catus2.ActivatorSpell;
 import catus2.EnumHelp;
 import catus2.GameHelp;
-import catus2.HitEvent;
+import catus2.combat.HitEvent;
 import catus2.ModMap;
 import catus2.Origin;
 import catus2.PlayerUnit;
 import catus2.School;
 import catus2.SpellId;
-import catus2.SpellModel;
+import catus2.SpellData;
 import catus2.Unit;
 import catus2.UnitPerc;
 import catus2.UnitStat;
+import catus2.buffs.ActivatorBuff;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 import catus2.buffs.ModBuff;
@@ -23,40 +24,80 @@ import catus2.feral.aoe.Swipe;
 import catus2.feral.aoe.ThrashBear;
 import catus2.feral.aoe.ThrashCat;
 import catus2.feral.finishers.FerociousBite;
+import catus2.feral.finishers.Maim;
 import catus2.feral.finishers.Rip;
 import catus2.feral.finishers.SavageRoar;
 import catus2.feral.generators.MoonfireCat;
 import catus2.feral.generators.Rake;
 import catus2.feral.generators.Shred;
+import catus2.feral.spells.BerserkCatBuff;
 import catus2.feral.spells.FaerieFire;
 import catus2.feral.spells.HealingTouch;
+import catus2.feral.spells.Moonfire;
 import catus2.feral.spells.Rejuvenation;
 import catus2.feral.spells.StampedingRoar;
 import catus2.feral.spells.TigersFury;
+import catus2.feral.spells.Wrath;
 import catus2.feral.talents.Incarnation;
 import catus2.procs.Trigger;
 
 public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     
+    // i don't know where to stick these
+    static public final SpellData DEBUFF_T17_4PC = new SpellData(SpellId.Druid.Feral.Bonus.T17_4PC_DEBUFF, "Gushing Wound", School.PHYSICAL);
+    static public final SpellData DEBUFF_PVP_WOD_4PC = new SpellData(SpellId.Druid.Feral.Bonus.PVP_WOD_4PC_DEBUFF, "Bloodletting", School.PHYSICAL);
     
+    static public final SpellData BUFF_STAMPEDING_ROAR = new SpellData(SpellId.Druid.STAMPEDING_ROAR, "Stampeding Roar", School.PHYSICAL);
+    static public final SpellData BUFF_REJUV = new SpellData(SpellId.Druid.REJUV, "Rejuvenation", School.NATURE);
+    
+    static public final SpellData DEBUFF_MF = new SpellData(SpellId.Druid.MF, "Moonfire", School.ARCANE);
+    static public final SpellData DEBUFF_MF_CAT = new SpellData(SpellId.Druid.Feral.MF, "Moonfire", School.ARCANE);
+    static public final SpellData DEBUFF_FF = new SpellData(SpellId.Druid.FF, "Faerie Fire", School.NATURE);    
+    static public final SpellData DEBUFF_RIP = new SpellData(SpellId.Druid.Feral.RIP, "Rip", School.PHYSICAL);
+    static public final SpellData DEBUFF_RAKE = new SpellData(SpellId.Druid.Feral.RAKE_DOT, "Rake", School.PHYSICAL);
+    static public final SpellData DEBUFF_THRASH_CAT = new SpellData(SpellId.Druid.THRASH_CAT, "Thrash", School.PHYSICAL);
+    static public final SpellData DEBUFF_THRASH_BEAR = new SpellData(SpellId.Druid.THRASH_BEAR, "Thrash", School.PHYSICAL);
+    
+    static public final SpellData BUFF_BONUS_T15_4PC = new SpellData(SpellId.Druid.Feral.Bonus.T15_4PC_BUFF, "Tiger's Fury", School.NATURE);
+    static public final SpellData BUFF_BONUS_T16_2PC = new SpellData(SpellId.Druid.Feral.Bonus.T16_2PC_BUFF, "Feral Fury", School.PHYSICAL);
+    static public final SpellData BUFF_BONUS_T16_4PC = new SpellData(SpellId.Druid.Feral.Bonus.T16_4PC_BUFF, "Feral Rage", School.PHYSICAL);
+    static public final SpellData BUFF_LOTP = new SpellData(SpellId.Druid.LOTP, "Leader of the Pack", School.PHYSICAL);
+    static public final SpellData BUFF_OOC = new SpellData(SpellId.Druid.Feral.OOC_BUFF, "Clearcasting", School.PHYSICAL);    
+    static public final SpellData BUFF_SR = new SpellData(SpellId.Druid.Feral.SR, "Savage Roar", School.PHYSICAL);
+    static public final SpellData BUFF_TF = new SpellData(SpellId.Druid.Feral.TF, "Tiger's Fury", School.PHYSICAL);
+    static public final SpellData BUFF_BT = new SpellData(SpellId.Druid.Feral.BT, "Bloodtalons", School.PHYSICAL);
+    static public final SpellData BUFF_PS = new SpellData(SpellId.Druid.Feral.PS_BUFF, "Predatory Swiftness", School.PHYSICAL);
+    static public final SpellData BUFF_PROWL = new SpellData(SpellId.Druid.PROWL, "Prowl", School.PHYSICAL);
+    static public final SpellData BUFF_HOTW = new SpellData(SpellId.Druid.Feral.HOTW, "Heart of the Wild", School.NATURE);
+    static public final SpellData BUFF_SI = new SpellData(SpellId.Druid.SI, "Survival Instincts", School.PHYSICAL);
+    static public final SpellData BUFF_BERSERK_CAT = new SpellData(SpellId.Druid.BERSERK_CAT, "Berserk", School.PHYSICAL);
+    static public final SpellData BUFF_BERSERK_BEAR = new SpellData(SpellId.Druid.BERSERK_BEAR, "Berserk", School.PHYSICAL);
+    static public final SpellData BUFF_DASH = new SpellData(SpellId.Druid.DASH, "Dash", School.PHYSICAL);
+    static public final SpellData BUFF_CAT_FORM = new SpellData(SpellId.Druid.CAT_FORM, "Cat Form", School.PHYSICAL);
+    static public final SpellData BUFF_BEAR_FORM = new SpellData(SpellId.Druid.BEAR_FORM, "Bear Form", School.PHYSICAL);
+    static public final SpellData BUFF_KOTJ = new SpellData(SpellId.Druid.Feral.KOTJ, "Incarnation: King of the Jungle", School.PHYSICAL);
+
+    static public final SpellData SPELL_RAKE = new SpellData(SpellId.Druid.Feral.RAKE_SPELL, "Rake", School.PHYSICAL);
+    static public final SpellData SPELL_MAIM = new SpellData(SpellId.Druid.Feral.MAIM, "Maim", School.PHYSICAL);
+
     public FeralGameData fgd;
     
     // buffs/debuffs
-    public final BuffModel buffModel_stampRoar = new BuffModel(SpellId.Druid.STAMPEDING_ROAR);
-    public final BuffModel buffModel_rejuv = new BuffModel(SpellId.Druid.REJUV);
-    public final BuffModel buffModel_mf = new BuffModel(SpellId.Druid.MF);
-    public final BuffModel buffModel_mf_cat = new BuffModel(SpellId.Druid.Feral.MF);   
-    public final BuffModel buffModel_ff = new BuffModel(SpellId.Druid.FF);
+    public final BuffModel buffModel_stampRoar = new BuffModel(BUFF_STAMPEDING_ROAR);
+    public final BuffModel buffModel_rejuv = new BuffModel(BUFF_REJUV);
+    public final BuffModel buffModel_mf = new BuffModel(DEBUFF_MF);
+    public final BuffModel buffModel_mf_cat = new BuffModel(DEBUFF_MF_CAT);   
+    public final BuffModel buffModel_ff = new BuffModel(DEBUFF_FF);
     
     // bonuses
-    public final BuffModel buffModel_bonus_pvp_wod_4pc = new BuffModel(SpellId.Druid.Feral.Set.PVP_WOD_4PC_DEBUFF);
-    public final BuffModel buffModel_bonus_t17_4pc = new BuffModel(SpellId.Druid.Feral.Set.T17_4PC_DEBUFF);
+    public final BuffModel buffModel_bonus_pvp_wod_4pc = new BuffModel(DEBUFF_PVP_WOD_4PC);
+    public final BuffModel buffModel_bonus_t17_4pc = new BuffModel(DEBUFF_PVP_WOD_4PC);
     
     // bleeds
-    public final BuffModel buffModel_rip = new BuffModel(SpellId.Druid.Feral.RIP);
-    public final BuffModel buffModel_rake = new BuffModel(SpellId.Druid.Feral.RAKE_DOT);
-    public final BuffModel buffModel_thrash_cat = new BuffModel(SpellId.Druid.THRASH_CAT);
-    public final BuffModel buffModel_thrash_bear = new BuffModel(SpellId.Druid.THRASH_BEAR);
+    public final BuffModel buffModel_rip = new BuffModel(DEBUFF_RIP);
+    public final BuffModel buffModel_rake = new BuffModel(DEBUFF_RAKE);
+    public final BuffModel buffModel_thrash_cat = new BuffModel(DEBUFF_THRASH_CAT);
+    public final BuffModel buffModel_thrash_bear = new BuffModel(DEBUFF_THRASH_CAT);
     
     public Feral() {
         super();
@@ -67,7 +108,7 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         return new FeralView(this, unit);
     }
         
-    public final ModMap movementSpeed_cat_sum = new ModMap(true);
+    public final ModMap movementSpeed_cat_sum = new ModMap.Sum();
    // public final ProductMap movementSpeed_bearForm_mods = new ProductMap();
     
     @Override
@@ -118,16 +159,23 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     
     // ---
         
-    public void bonus_t17_2pc_trigger() {
-        /*
-        Cat thrash, cat rake, cat rip, and t17 4p bonus all proc the energy. 
-        Bear thrash and the new bleed enchant, do NOT proc the energy.
-        3 may be too large of a number, still working through some tuning on these.
-        */
+    // maybe intercept this using didDamage() using spell id
+    public void trigger_bonus_t17_2pc() {
+        // Cat thrash, cat rake, cat rip, and t17 4p bonus all proc the energy. 
+        // Bear thrash and the new bleed enchant, do NOT proc the energy.
         if (cfg.bonus_t17_2pc) {
             power_energy.add(fgd.BONUS_T17_2PC_ENERGY_BONUS);
         }  
     }
+    
+    public void trigger_glyph_sr() {
+        if (cfg.glyph_savageRoar && isProwling()) {
+            spell_sr.activateWithCombos(5);                
+        }
+    }
+    
+    
+    // ---
     
     public void breakRootsAndSnares() {
         // duh
@@ -143,37 +191,21 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         }
     }
     
-    public void applySavageRoarGlyph() {
-        if (cfg.glyph_savageRoar && isProwling()) {
-            spell_sr.activateWithCombos(5);                
-        }
-    }
     
     // --- 
     
-    // Tiger's Fury
-    // http://wow.wowhead.com/spell=138358
-    // Increases critical strike chance by 40% for next 3 uses of Mangle, Shred, Ferocious Bite, Ravage, and Swipe.  Lasts 30 sec.
-    public final Buff buff_bonus_t15_4pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T15_4PC_BUFF), selfView);
+    public final Buff buff_bonus_t15_4pc = new Buff(new BuffModel(BUFF_BONUS_T15_4PC), selfView);
+    public final Buff buff_bonus_t16_2pc = new Buff(new BuffModel(BUFF_BONUS_T16_2PC), selfView);    
+    public final Buff buff_bonus_t16_4pc = new Buff(new BuffModel(BUFF_BONUS_T16_4PC), selfView);
     
-    // Feral Fury
-    // http://www.wowhead.com/spell=144865
-    // Omen of Clarity increases damage of Shred, Mangle, Swipe, and Ravage by 50% for 6 sec.
-    public final Buff buff_bonus_t16_2pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T16_2PC_BUFF), selfView);
-    
-    // Feral Rage
-    // http://www.wowhead.com/spell=146874
-    // After using Tiger's Fury, your next finishing move will restore 3 combo points on your current target after being used.
-    public final Buff buff_bonus_t16_4pc = new Buff(new BuffModel(SpellId.Druid.Feral.Set.T16_4PC_BUFF), selfView);
-    
-    public final Buff buff_lotp = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.LOTP), selfView) {
+    public final Buff buff_lotp = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_LOTP), selfView) {
         // do later
         // idea:
         // auras have infinite range
         // auras are stored in a party/raid object
     };
     
-    public final Buff buff_ooc = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.OOC), selfView) {
+    public final Buff buff_ooc = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_OOC), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {
             if (v.o.cfg.bonus_t16_2pc) {
@@ -182,24 +214,27 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         }    
     };
     
-    public final Buff buff_sr = new Buff(new BuffModel(SpellId.Druid.Feral.SR), selfView);        
-    public final Buff buff_tf = new Buff(new BuffModel(SpellId.Druid.Feral.TF), selfView);    
-    public final Buff buff_bt = new Buff(new BuffModel(SpellId.Druid.Feral.BT), selfView);    
-    public final Buff buff_ps = new Buff(new BuffModel(SpellId.Druid.Feral.PS_BUFF), selfView);
-    public final Buff buff_prowl = new Buff(new BuffModel(SpellId.Druid.PROWL), selfView);
-    public final Buff buff_hotw = new Buff(new BuffModel(SpellId.Druid.Feral.HOTW), selfView) {
+    
+    public final Buff buff_sr = new Buff(new BuffModel(BUFF_SR), selfView);        
+    public final Buff buff_tf = new Buff(new BuffModel(BUFF_TF), selfView);    
+    public final Buff buff_bt = new Buff(new BuffModel(BUFF_BT), selfView);    
+    public final Buff buff_ps = new Buff(new BuffModel(BUFF_PS), selfView);
+    public final Buff buff_prowl = new Buff(new BuffModel(BUFF_PROWL), selfView);
+    public final ActivatorBuff buff_hotw = new ActivatorBuff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_HOTW), selfView) {
         @Override
-        public void gotActivated(boolean refreshed) {
-            v.o.spellPower_product.set(m.id, fgd.HOTW_SPELL_POWER_MOD);
-        }
-        @Override
-        public void gotDeactivated() {
-            v.o.spellPower_product.remove(m.id);
+        public void stateChanged(boolean state) {
+            int id = m.id();
+            v.o.spellPower_product.setOrClear(state, id, fgd.HOTW_SPELL_POWER_MOD);
+            v.o.spell_mf.powerCostMod.setOrClear(state, id, 0);
+            v.o.spell_wrath.powerCostMod.setOrClear(state, id, 0);
+            v.o.spell_rejuv.powerCostMod.setOrClear(state,id, 0);
+            v.o.spell_ht.powerCostMod.setOrClear(state, id, 0);  
         }
     };
     
-    public final ModBuff buff_si = new ModBuff(new BuffModel(SpellId.Druid.SI), selfView, damageRecv_all_product);    
-    public final ModBuff buff_berserk_cat = new ModBuff(new BuffModel(SpellId.Druid.BERSERK_CAT), selfView, power_energy.costMods);
+    public final ModBuff buff_si = new ModBuff(new BuffModel(BUFF_SI), selfView, incomingDamageMod_all_product);    
+    public final BerserkCatBuff buff_berserk_cat = new BerserkCatBuff(this);
+    public final Buff buff_berserk_bear = new ModBuff(new BuffModel(BUFF_BERSERK_BEAR), selfView, power_energy.costMods);
         
     // ---
     
@@ -213,10 +248,10 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
             // we need to cancel the current form
             switch (currentForm) {
                 case CAT:
-                    buff_form_cat.cancel();
+                    buff_catForm.cancel();
                     break;
                 case BEAR:
-                    buff_form_bear.cancel();
+                    buff_bearForm.cancel();
                     break;
             }
             currentForm = form;
@@ -267,32 +302,32 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     }
     */
     
-    public final Buff<BuffModel,Feral,FeralView> buff_dash = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.CAT_FORM), selfView) {
+    public final Buff<BuffModel,Feral,FeralView> buff_dash = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_DASH), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {
-            v.o.buff_form_cat.activate();
-            v.o.movementSpeed_cat_sum.set(m.id, v.o.fgd.DASH_SPEED_BONUS);
+            v.o.buff_catForm.activate();
+            v.o.movementSpeed_cat_sum.set(m.id(), v.o.fgd.DASH_SPEED_BONUS);
         }
         @Override
         public void gotDeactivated() {
-            v.o.movementSpeed_cat_sum.remove(m.id);
+            v.o.movementSpeed_cat_sum.remove(m.id());
         }
     };
     
-    public final Buff<BuffModel,Feral,FeralView> buff_form_cat = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.CAT_FORM), selfView) {
+    public final Buff<BuffModel,Feral,FeralView> buff_catForm = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_CAT_FORM), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {            
             v.o.breakRootsAndSnares();
-            v.o.movementSpeed_cat_sum.set(m.id, v.o.fgd.CAT_FORM_SPEED_BONUS);
+            v.o.movementSpeed_cat_sum.set(m.id(), v.o.fgd.CAT_FORM_SPEED_BONUS);
         }
         @Override
         public void gotDeactivated() {
             v.o.breakRootsAndSnares();
-            v.o.movementSpeed_cat_sum.remove(m.id);
+            v.o.movementSpeed_cat_sum.remove(m.id());
         }
     };
     
-    public final Buff<BuffModel,Feral,FeralView> buff_form_bear = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.BEAR_FORM), selfView) {
+    public final Buff<BuffModel,Feral,FeralView> buff_bearForm = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_BEAR_FORM), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {            
             v.o.breakRootsAndSnares();
@@ -300,10 +335,10 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         }
     };
     
-    public final Buff<BuffModel,Feral,FeralView> buff_form_kotj = new Buff<BuffModel,Feral,FeralView>(new BuffModel(SpellId.Druid.Feral.KOTJ), selfView) {
+    public final Buff<BuffModel,Feral,FeralView> buff_form_kotj = new Buff<BuffModel,Feral,FeralView>(new BuffModel(BUFF_KOTJ), selfView) {
         @Override
         public void gotActivated(boolean refreshed) {            
-            v.o.buff_form_cat.activate();
+            v.o.buff_catForm.activate();
         }
         @Override
         public void gotDeactivated() {
@@ -327,25 +362,30 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     public final SavageRoar spell_sr = new SavageRoar(this);
     public final FerociousBite spell_fb = new FerociousBite(this);
     public final Rip spell_rip = new Rip(this);
+    public final Maim spell_maim = new Maim(this);
     
-    // heals
+    // spells
     public final HealingTouch spell_ht = new HealingTouch(this);
     public final Rejuvenation spell_rejuv = new Rejuvenation(this);
+    public final Wrath spell_wrath = new Wrath(this);
+    public final Moonfire spell_mf = new Moonfire(this);
     
     // cat stuff    
     public final TigersFury spell_tf = new TigersFury(this);
     public final FaerieFire spell_ff = new FaerieFire(this);
     public final ActivatorSpell spell_berserk_cat = new ActivatorSpell(buff_berserk_cat);
+    public final ActivatorSpell spell_berserk_bear = new ActivatorSpell(buff_berserk_bear);
     public final StampedingRoar spell_stampRoar = new StampedingRoar(this);
     public final ActivatorSpell spell_si = new ActivatorSpell(buff_si);
     public final ActivatorSpell spell_dash = new ActivatorSpell(buff_dash);
     
     // talents?
     public final Incarnation spell_kotj = new Incarnation(this);
+    public final ActivatorSpell spell_hotw = new ActivatorSpell(buff_hotw);
     
     // forms
-    public final ActivatorSpell spell_catForm = new ActivatorSpell(buff_form_cat);
-    public final ActivatorSpell spell_bearForm = new ActivatorSpell(buff_form_cat);
+    public final ActivatorSpell spell_catForm = new ActivatorSpell(buff_catForm);
+    public final ActivatorSpell spell_bearForm = new ActivatorSpell(buff_bearForm);
     
     // procs
     
@@ -368,11 +408,12 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         super.didDamage(hit);
         if (cfg.bonus_t17_4pc && buff_berserk_cat.isActive()) { 
             switch (hit.spell.id) {
-                case SpellId.Druid.Feral.RAKE_DOT:
-                case SpellId.Druid.Feral.FB:
-                case SpellId.Druid.Feral.RIP:
-                case SpellId.Druid.THRASH_CAT:
+                //case SpellId.Druid.Feral.RAKE_DOT:
+                //case SpellId.Druid.Feral.RIP:
+                //case SpellId.Druid.THRASH_CAT:
+                case SpellId.Druid.FB:
                 case SpellId.Druid.SHRED:
+                case SpellId.Druid.Feral.SWIPE:
                     getView(hit.target).dot_bonus_t17_4pc.accumulate(hit.computed);
             }
         }                       
@@ -384,7 +425,7 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     public void prepareForCombat() {
         super.prepareForCombat();
         
-        perc_sum[UnitPerc.CRIT].set(SpellId.DPS_Agility.CRITICAL_STRIKES, fgd.CRITICAL_STRIKES_CRIT_BONUS);
+        perc_sum[UnitPerc.CRIT].set(SpellId.PrimaryStat.Agility.CRITICAL_STRIKES, fgd.CRITICAL_STRIKES_CRIT_BONUS);
         perc_rating_product[UnitPerc.CRIT].set(SpellId.Druid.Feral.SHARPENED_CLAWS, fgd.SHARPENED_CLAWS_CRIT_MOD);
         
         stat_product[UnitStat.AGI].set(SpellId.Druid.Feral.LEATHER_SPECIALIZATION, fgd.LEATHER_SPECIALIZATION_AGI_MOD);
@@ -434,6 +475,8 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     @Override
     public void init() {
         super.init();
+        
+        buff_sr.m.pandemic = true; // fixed on beta
         
         buff_dash.m.default_duration = fgd.DASH_DURATION;
         

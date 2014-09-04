@@ -1,12 +1,12 @@
 package catus2;
 
-public class SpellModel {
+public class SpellData {
 
     public final int id;    
     public final String name;
     public final School school;
     
-    public SpellModel(int id, String name, School school) {
+    public SpellData(int id, String name, School school) {
         this.id = id;
         this.name = name;
         this.school = school;

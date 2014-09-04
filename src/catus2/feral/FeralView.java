@@ -1,14 +1,12 @@
 package catus2.feral;
 
 import catus2.AbstractView;
-import catus2.Application;
-import catus2.Origin;
-import catus2.School;
 import catus2.Unit;
-import catus2.buffs.Accumulate;
+import catus2.buffs.AccumulateBuff;
 import catus2.buffs.Buff;
 import catus2.buffs.BuffModel;
 import catus2.buffs.ModBuff;
+import catus2.combat.HitEvent;
 
 public class FeralView extends AbstractView<Feral> {
 
@@ -21,12 +19,12 @@ public class FeralView extends AbstractView<Feral> {
     public final FeralBleed dot_rip;
     public final FeralBleed dot_rake;
     public final FeralBleed dot_thrash_cat;
-    public final Accumulate<BuffModel,Feral,FeralView> dot_bonus_t17_4pc;
+    public final AccumulateBuff<BuffModel,Feral,FeralView> dot_bonus_t17_4pc;
     public final Buff debuff_bonus_pvp_wod_4pc;
 
     public FeralView(Feral owner, Unit target) {
         super(owner, target);
-        buff_stampRoar = new ModBuff(o.buffModel_stampRoar, this, owner.movementSpeed_sum);
+        buff_stampRoar = new ModBuff(o.buffModel_stampRoar, this, o.movementSpeed_sum);
         hot_rejuv = new Buff(o.buffModel_rejuv, this);
         dot_mf = new Buff(o.buffModel_mf, this);        
         dot_mf_cat = new Buff(o.buffModel_mf_cat, this);
@@ -34,30 +32,27 @@ public class FeralView extends AbstractView<Feral> {
         dot_rip = new FeralBleed(o.buffModel_rip, this);
         dot_rake = new FeralBleed(o.buffModel_rake, this);
         dot_thrash_cat = new FeralBleed(o.buffModel_thrash_cat, this);
-        dot_bonus_t17_4pc = new Accumulate<BuffModel,Feral,FeralView>(o.buffModel_bonus_t17_4pc, this) {
+        dot_bonus_t17_4pc = new AccumulateBuff<BuffModel,Feral,FeralView>(o.buffModel_bonus_t17_4pc, this) {
             @Override
-            public void gotTickPortion(double damage) {
-                o.bonus_t17_2pc_trigger();
-                Application app = o.tryApply(u, this, Origin.BLEED, School.PHYSICAL, 0, 0);
-                app.base = damage;    
-                
-                // this cannot benefit from any damage modifier stuff
-                
-                
-                
-                
+            public void gotTickPortion(double amount) {
+                o.trigger_bonus_t17_2pc();   
+                HitEvent event = periodic(0); 
+                event.base = o.getRazorClawsMod() * amount;                       
+                v.check_bonus_pvp_wod_4pc(event);
+                // we need to make sure this avoids physical school output modifiers
+                o.computeAndRecord(event);
             }
         };
         debuff_ff = new Buff(o.buffModel_ff, this);
         debuff_bonus_pvp_wod_4pc = new Buff(o.buffModel_bonus_pvp_wod_4pc, this);
     }
 
-    public void executeBleed(Application app) {        
+    // this is a PERSONAL buff, other players do not benefit
+    // this does not check if it was actually a bleed
+    public void check_bonus_pvp_wod_4pc(HitEvent event) {        
         if (debuff_bonus_pvp_wod_4pc.isActive()) { 
-            // this does not check if it was actually a bleed
-            app.base *= o.fgd.BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD;
+            event.base *= o.fgd.BONUS_WOD_PVP_4PC_BLEED_DAMAGE_MOD;
         }  
-        o.executeApply(app);
     }
     
 }

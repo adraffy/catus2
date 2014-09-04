@@ -4,7 +4,7 @@ public class GameData {
 
     static public final double HP_PER_STA = 60;
     
-    static public final double[] L100_RATING_PER_PERC = new double[UnitPerc.NUM];
+    static public final double[] L100_RATING_PER_PERC = new double[UnitPerc.N];
     static {
         L100_RATING_PER_PERC[UnitPerc.MASTERY] = 88;
         L100_RATING_PER_PERC[UnitPerc.CRIT] = 122;

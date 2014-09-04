@@ -6,7 +6,7 @@ public class Power {
     int maximum;
     public int current;  
     
-    public final ModMap costMods = new ModMap(true); // no idea
+    public final ModMap costMods = new ModMap.Product(); // no idea
     
     public int percentOfBase(double perc) {
         return (int)(perc * base);

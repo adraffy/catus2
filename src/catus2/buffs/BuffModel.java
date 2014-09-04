@@ -1,12 +1,14 @@
 package catus2.buffs;
 
+import catus2.SpellData;
+
 public class BuffModel {
 
-    public final int id;
-
+    public final SpellData rx; // cooler than sd :p
+    
     public boolean enabled;
-    public boolean passive; // activate once
-    public boolean unique; // one per unit
+    public boolean passive;  // activate once
+    public boolean unique;   // one per unit
     public boolean pandemic;
     
     public int default_duration;
@@ -18,8 +20,12 @@ public class BuffModel {
     
     public double param; // scaling param or modifier
     
-    public BuffModel(int id) {
-        this.id = id;
+    public BuffModel(SpellData sd) {
+        this.rx = sd;
+    }
+    
+    public final int id() {
+        return rx.id;
     }
     
     public void setCharges(int x) {

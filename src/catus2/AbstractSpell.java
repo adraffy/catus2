@@ -1,12 +1,23 @@
 package catus2;
 
+import catus2.combat.HitEvent;
+
 public abstract class AbstractSpell<O extends Unit> {
     
     public final O o;
     public final TargetStyle targetStyle;
     public boolean harm;
     public double range_sweep;
-    public SpellModel m;
+    public SpellData m;
+    
+    // Apply Aura: Modifies Power Cost (14)
+    // 2014-09-03: confirmed multiplicative using mage (arcane power, arcane blast)
+    // 5000 mana * (1 + 150% * stacks) * (1 + 10%)
+    public final ModMap powerCostMod = new ModMap.Product();    
+    
+    
+    public final ModMap directDoneMod = new ModMap.Product();   // Apply Aura: Modifies Damage/Healing Done
+    public final ModMap periodicDoneMod = new ModMap.Product(); // Apply Aura: Modifies Periodic Damage/Healing Done (22)
     
     public int schoolMask;
     
@@ -285,7 +296,7 @@ public abstract class AbstractSpell<O extends Unit> {
     
     public void simpleSpellDamage(Unit target, double coeff) {
         HitEvent hit = HitEvent.harm(m, o, target, o.getCritChance(), true, true);
-        if (hit.landed()) {
+        if (hit.success()) {
             hit.base = o.getSP(m.school) * coeff;
         }
         o.computeAndRecord(hit);

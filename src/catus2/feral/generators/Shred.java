@@ -14,7 +14,7 @@ public class Shred extends CatGenerator {
 
     @Override
     public Application generate(FeralView target) {
-        o.applySavageRoarGlyph();
+        o.trigger_glyph_sr();
         double mod = 1;
         double crit = o.getCritChance();
         // i dont know the order for these two crit modifiers

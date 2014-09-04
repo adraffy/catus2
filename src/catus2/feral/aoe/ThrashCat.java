@@ -30,7 +30,7 @@ public class ThrashCat extends BeastAoE {
                 bleed.snapshot = snap;
                 bleed.activate();    
                 de.base = dmg;
-                v.executeBleed(de);                             
+                v.check_bonus_pvp_wod_4pc(de);                             
             }
         }
     }

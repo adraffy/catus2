@@ -4,9 +4,9 @@ public enum Origin {
     WHITE,          // eg. Melee            // harm
     MELEE,          // eg. Shred            // harm
     DAMAGE,         // eg. Faerie Fire      // harm
-    DOT,            // eg. Moonfire         // harm
+    DOT,            // eg. Moonfire         // harm overtime 
     HEAL,           // eg. Healing Touch    // help
-    HOT             // eg. Rejuv            // help
+    HOT             // eg. Rejuv            // help overtime
     
     // fuck, where do i put SPELL_AOE, SPELL_TARGETED 
     // maybe source instanceof Spell and target type...
@@ -19,6 +19,7 @@ public enum Origin {
     // OVERTIME
     // HEAL
     // SINGLE_TARGET
+    // CAN_REFLECT
     
     // IS_BLEED = IGNORE_ARMOR | OVERTIME
     

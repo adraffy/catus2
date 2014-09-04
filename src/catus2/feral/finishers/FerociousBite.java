@@ -3,18 +3,23 @@ package catus2.feral.finishers;
 import catus2.Application;
 import catus2.Origin;
 import catus2.School;
+import catus2.SpellData;
+import catus2.SpellId;
 import catus2.Unit;
+import catus2.combat.HitEvent;
 import catus2.feral.Feral;
 import catus2.feral.FeralBleed;
 
 public class FerociousBite extends CatFinisher.Offensive {
+    
+    static public final SpellData SPELL = new SpellData(SpellId.Druid.FB, "Ferocious Bite", School.PHYSICAL);
     
     public FerociousBite(Feral owner) {
         super(owner);
     }
 
     @Override
-    public Application finish(Unit target, int energyCost) {        
+    public HitEvent finish(Unit target, int energyCost) {        
         boolean bleeding = target.isBleeding();  
         double crit = o.getCritChance();
         if (o.buff_bonus_t15_4pc.tryConsume()) {
@@ -33,17 +38,18 @@ public class FerociousBite extends CatFinisher.Offensive {
         if (o.cfg.glyph_fb) {            
             o.applyHeal_percentHealth(energyCost * o.fgd.FB_GLYPH_PERC_HEALTH_PER_ENERGY, o, this, Origin.HEAL, School.PHYSICAL);
         }        
-        Application app = o.tryApply(target, this, Origin.MELEE, School.PHYSICAL, crit, 0);             
-        if (app.hit()) {
-            app.base = mod * o.getBloodtalonsMod(bt) * o.getAP() * o.fgd.FB_DAMAGE_PER_AP * o.power_combos.getPercent();            
+        HitEvent event = HitEvent.melee(m, o, target, crit, 0);
+        if (event.success()) {
+            event.base = mod * o.getBloodtalonsMod(bt) * o.getAP() * o.fgd.FB_DAMAGE_PER_AP * o.power_combos.getPercent();            
             if (target.getHealthPercent() < o.BITW_PERC) {
                 FeralBleed rip = o.getView(target).dot_rip;
                 if (rip.isActive()) {
+                    // currently on beta, this is fucked up
                     rip.activate();
                 }
             }                
         }
-        return app;
+        return event;
     }
 
     

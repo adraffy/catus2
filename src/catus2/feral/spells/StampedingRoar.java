@@ -20,7 +20,7 @@ public class StampedingRoar extends AbstractSpell<Feral> {
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {  
         if (!o.cfg.glyph_stampRoar && !o.isCatOrBearForm()) {
-            o.buff_form_bear.activate();
+            o.buff_bearForm.activate();
         }        
         UnitList list = o.world.retainUnitList();
         try {

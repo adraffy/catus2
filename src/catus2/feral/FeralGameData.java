@@ -11,6 +11,8 @@ public class FeralGameData {
     public double PERK_IMPROVED_RAKE_DAMAGE_MOD = 2;
     public int PERK_ENHANCED_BERSERK_ENERGY_CEILING = 50;
     
+    public double BERSERK_CAT_POWER_MOD = 0.5;
+    
     public double BITW_PERC = 0.25;
     
     public int OOC_DURATION = 15000;
@@ -53,6 +55,10 @@ public class FeralGameData {
     public int WRATH_CAST = 2000;
     public double WRATH_COST = 0.088;
     public double WRATH_DAMAGE_PER_SP = 1.3;
+    
+    public int MAIM_COST = 35;
+    public int MAIM_DAMAGE_PER_DPS = 2;
+    public int MAIM_STUN_PER_CP = 1000;
     
     public double THRASH_CAT_TICK_DAMAGE_PER_AP = 0.113886;
     public double THRASH_CAT_INITIAL_TICK_MOD = 1.4;    

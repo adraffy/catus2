@@ -1,17 +1,17 @@
 package catus2.feral.spells;
 
 import catus2.AbstractSpell;
-import catus2.HitEvent;
+import catus2.combat.HitEvent;
 import catus2.School;
 import catus2.SpellId;
-import catus2.SpellModel;
+import catus2.SpellData;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
 
 public class FaerieFire extends AbstractSpell<Feral> {
 
-    static public final SpellModel SPELL = new SpellModel(SpellId.Druid.FF, "Faerie Fire", School.NATURE);
+    static public final SpellData SPELL = new SpellData(SpellId.Druid.FF, "Faerie Fire", School.NATURE);
     
     /*
     Faerie Fire
@@ -31,7 +31,7 @@ public class FaerieFire extends AbstractSpell<Feral> {
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {      
         boolean damaging = o.isBearForm(); 
         HitEvent hit = HitEvent.harm(m, o, target, damaging ? o.getCritChance() : 0, true, true);
-        if (hit.landed()) {
+        if (hit.success()) {
             if (damaging) {
                 hit.base = o.getAP() * o.fgd.FF_BEAR_DAMAGE_PER_AP;   
             }

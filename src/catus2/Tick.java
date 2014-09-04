@@ -6,6 +6,8 @@ public abstract class Tick {
     
     abstract public void run();
     
+    public final int at() { return at; }
+    
     static public Tick wrap(final Runnable r) {
         return new Tick() {
             @Override

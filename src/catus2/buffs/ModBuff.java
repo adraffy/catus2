@@ -14,11 +14,11 @@ public class ModBuff<M extends BuffModel, O extends Unit<O,V>, V extends Abstrac
     }
     
     public void activated(boolean refreshed) {
-        map.set(m.id, m.param);
+        map.set(m.id(), m.param);
     }
     
     public void deactivated() {
-        map.remove(m.id);
+        map.remove(m.id());
     }
 
 }

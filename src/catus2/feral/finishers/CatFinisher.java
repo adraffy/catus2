@@ -1,6 +1,7 @@
 package catus2.feral.finishers;
 
 import catus2.Application;
+import catus2.combat.HitEvent;
 import catus2.TargetStyle;
 import catus2.Unit;
 import catus2.feral.Feral;
@@ -24,9 +25,9 @@ public abstract class CatFinisher extends FeralSpell {
 
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        Application app = finish(target, powerCost);
-        o.executeApply(app);
-        if (app.hit()) {            
+        HitEvent event = finish(target, powerCost);
+        o.computeAndRecord(event);
+        if (event.success()) {            
             int c = o.power_combos.zero();
             if (!o.cfg.disable_ps && o.world.randomChance(c * o.fgd.PS_CHANCE_PER_CP)) {
                 o.buff_ps.activate();
@@ -46,7 +47,7 @@ public abstract class CatFinisher extends FeralSpell {
     }
     
     // return true if landed
-    public abstract Application finish(Unit target, int powerCost);
+    public abstract HitEvent finish(Unit target, int powerCost);
             
     static public abstract class Offensive extends CatFinisher {
         

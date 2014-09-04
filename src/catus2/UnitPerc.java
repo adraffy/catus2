@@ -15,7 +15,7 @@ public class UnitPerc {
     static public final int BLOCK   = 9;
     static public final int HIT     = 10;
     static public final int EXP     = 11;
-    static public final int NUM     = 12; // be right, don't be wrong
+    static public final int N     = 12; // be right, don't be wrong
 
     public final int index;
     public final String longName;
@@ -51,8 +51,8 @@ public class UnitPerc {
     
     static public final UnitPerc[] A;
     static {
-        A = new UnitPerc[NUM];
-        for (int i = 0; i < NUM; i++) {
+        A = new UnitPerc[N];
+        for (int i = 0; i < N; i++) {
             A[i] = make(i);
         }
     }

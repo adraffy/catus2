@@ -13,7 +13,7 @@ public class School {
         static public final int FROST    = 4;
         static public final int SHADOW   = 5;
         static public final int ARCANE   = 6;
-        static public final int NUM      = 7; // grr
+        static public final int N      = 7; // grr
     }
 
     public final int[] indexes;
@@ -33,6 +33,8 @@ public class School {
         }        
         return mask;
     }
+    
+    static public final School NONE        = new School("None");
     
     static public final School PHYSICAL    = new School("Physical", Idx.PHYSICAL);
     static public final School ARCANE      = new School("Arcane",   Idx.ARCANE);

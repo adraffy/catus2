@@ -38,7 +38,7 @@ abstract public class PlayerUnit<O extends Unit<O,V>,V extends AbstractView<O>,C
         
         if (!cfg.disable_racials) {
             if (cfg.racial_ne) {
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.NightElf.NATURE_RESISTANCE, 0.99);
+                incomingDamageMod_school_product[School.Idx.NATURE].set(SpellId.Racial.NightElf.NATURE_RESISTANCE, 0.99);
                 if (world.nightTime) {
                     perc_sum[UnitPerc.HASTE].set(SpellId.Racial.NightElf.TOUCH_OF_ELUNE_NIGHT, 0.01);
                 } else {
@@ -47,14 +47,14 @@ abstract public class PlayerUnit<O extends Unit<O,V>,V extends AbstractView<O>,C
                 perc_sum[UnitPerc.DODGE].set(SpellId.Racial.NightElf.QUICKNESS, 0.02);
             }
             if (cfg.racial_tauren) {
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Tauren.NATURE_RESISTANCE, 0.99);                
+                incomingDamageMod_school_product[School.Idx.NATURE].set(SpellId.Racial.Tauren.NATURE_RESISTANCE, 0.99);                
                 damageDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
                 healingDone_critBonus_sum.set(SpellId.Racial.Tauren.BRAWN, 0.02);
             }
             if (cfg.racial_worgen) {
                 perc_sum[UnitPerc.CRIT].set(SpellId.Racial.Worgen.VICIOUSNESS, 0.01);
-                damageRecv_school_product[School.Idx.NATURE].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
-                damageRecv_school_product[School.Idx.SHADOW].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+                incomingDamageMod_school_product[School.Idx.NATURE].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
+                incomingDamageMod_school_product[School.Idx.SHADOW].set(SpellId.Racial.Worgen.ABERRATION, 0.99);
             }       
         }
         

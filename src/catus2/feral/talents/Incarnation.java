@@ -13,7 +13,7 @@ public class Incarnation extends FeralSpell {
 
     @Override
     public void casted(Unit target, double x, double y, int castTime, int powerCost) {
-        o.buff_form_cat.activate();
+        o.buff_catForm.activate();
         o.buff_form_kotj.activate();
     }
 

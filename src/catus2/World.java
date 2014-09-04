@@ -14,6 +14,8 @@ public class World {
     public boolean ignoreLocation;
     public boolean neverMiss;
     
+    public boolean ignoreCrowdControl = true;
+    
     // put these somewhere else
     public int RANGE_SELF = 0;
     public int RANGE_COMBAT = 5;

@@ -5,15 +5,18 @@ import catus2.Tick;
 import catus2.Timeline;
 import catus2.Unit;
 import catus2.World;
+import catus2.combat.HitEvent;
 
 public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public final M m;
     public final V v;
+    public final O o;
        
     public Buff(M model, V view) {
         this.m = model;
         this.v = view;
+        o = v.o; // reduce indirection?
     }
     
     public boolean current_state;
@@ -42,7 +45,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
         timeline().cancel(duration_fader);
         timeline().cancel(tick_fader);
         if (m.unique) {
-            v.u.uniqueBuffMap.remove(m.id);
+            v.u.uniqueBuffMap.remove(m.id());
         }
         gotDeactivated();
     }
@@ -64,7 +67,7 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
             throw new IllegalStateException("Duration: " + duration);
         }        
         if (m.unique) {
-            Buff buff = (Buff)v.u.uniqueBuffMap.put(m.id, this); // java generics bug
+            Buff buff = (Buff)v.u.uniqueBuffMap.put(m.id(), this); // java generics bug
             if (buff != null && buff != this) {
                 buff.cancel();
             }
@@ -132,8 +135,8 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
         return 0;
     }
          
-    private double last_frequency;
-    private int last_clock;
+    protected double last_frequency;
+    protected int last_clock;
     
     private void scheduleTick() {
         last_frequency = getFrequency();        
@@ -145,7 +148,16 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
     public void gotTick(double fraction) {} // guarenteed target is alive
     public void gotDeactivated() {}
     
-    public final Tick duration_fader = new Tick() {
+    public double getRemainingTime() {
+        return current_state ? current_duration == 0 ? Double.POSITIVE_INFINITY : remainingTime() : Double.NaN;
+    }
+    
+    // assumes you are scheduled
+    protected int remainingTime() {
+        return timeline().timeUntil(duration_fader);
+    }
+    
+    protected final Tick duration_fader = new Tick() {
         @Override
         public void run() {
             if (timeline().cancel(tick_fader) && !v.u.isDead()) {
@@ -155,9 +167,8 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
             deactivate();
         }        
     };
-    
-    
-    public final Tick tick_fader = new Tick() {
+        
+    protected final Tick tick_fader = new Tick() {
         @Override
         public void run() {
             if (v.u.isDead()) {
@@ -170,5 +181,10 @@ public class Buff<M extends BuffModel,O extends Unit<O,V>,V extends AbstractView
             }
         }
     };
+ 
+    
+    // HitEvent helprs
+    public HitEvent periodic() { return periodic(o.getCritChance()); }
+    public HitEvent periodic(double critChance) { return HitEvent.periodic(m.rx, o, v.o, critChance); }
     
 }

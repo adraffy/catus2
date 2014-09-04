@@ -1,4 +1,6 @@
-package catus2;
+package catus2.combat;
+
+import catus2.Unit;
 
 public class AttackTable {
     

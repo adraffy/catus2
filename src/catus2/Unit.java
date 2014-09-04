@@ -1,6 +1,9 @@
 package catus2;
 
+import catus2.combat.HitEvent;
+import catus2.combat.CrowdControl;
 import catus2.buffs.Buff;
+import catus2.buffs.BuffModel;
 import catus2.procs.Trigger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,23 +13,31 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
    
     public final boolean npc;
     
-    public final ModMap movementSpeed_sum = ModMap.sum(); // wod change
+    public final ModMap movementSpeed_sum = new ModMap.Sum(); // wod change
     
-    public final ModMap spellPower_product = ModMap.product();
+    public final ModMap spellPower_product = new ModMap.Product();
     
-    public final ModMap damageRecv_all_product = ModMap.product();
-    public final ModMap[] damageRecv_school_product;
+    public final IntSet incomingDamageImmune_school_set = new IntSet();
+    public final ModMap incomingDamageMod_all_product = new ModMap.Product();
+    public final ModMap[] incomingDamageMod_school_product;
     
-    public final ModMap damageDone_all_product = ModMap.product();
+    public final ModMap damageDone_all_product = new ModMap.Product();
     public final ModMap[] damageDone_school_product;
-    public final ModMap damageDone_critBonus_sum = ModMap.sum();
+    public final ModMap damageDone_critBonus_sum = new ModMap.Sum();
     
-    public final ModMap healingRecv_all_product = ModMap.product();
-    public final ModMap healingRecv_critBonus_sum = ModMap.product();
+    public final ModMap healingRecv_all_product = new ModMap.Product();
     
-    public final ModMap healingDone_all_product = ModMap.product();    
-    public final ModMap healingDone_critBonus_sum = ModMap.sum(); // assumptions
+    public final ModMap healingDone_all_product = new ModMap.Product();   
+    public final ModMap healingDone_critBonus_sum = new ModMap.Sum(); // assumptions
 
+    
+    public final int[] cc_resetTime = new int[CrowdControl.N];
+    public final int[] cc_stackCount = new int[CrowdControl.N];
+    
+    
+    static final BuffModel buffModel_stunned = new BuffModel(-1);
+    static final BuffModel buffModel_silenced = new BuffModel(-1);
+    
     public final ModMap[] stat_product;
     public final int[] stat_raw;
     
@@ -42,29 +53,30 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public final ArrayList<Runnable> prepList = new ArrayList<>();
     
     public final V selfView = _createView(this); // not sure when this is executed during constructor
+        
     
     public Unit(boolean npc) {
         this.npc = npc;
-        damageDone_school_product = new ModMap[School.Idx.NUM];    
-        damageRecv_school_product = new ModMap[School.Idx.NUM];
-        for (int i = 0; i < School.Idx.NUM; i++) {
-            damageDone_school_product[i] = new ModMap(true);
-            damageRecv_school_product[i] = new ModMap(true);
+        damageDone_school_product = new ModMap[School.Idx.N];    
+        incomingDamageMod_school_product = new ModMap[School.Idx.N];
+        for (int i = 0; i < School.Idx.N; i++) {
+            damageDone_school_product[i] = new ModMap.Product();
+            incomingDamageMod_school_product[i] = new ModMap.Product();
         }         
         stat_raw = new int[UnitStat.NUM];
         stat_product = new ModMap[UnitStat.NUM];  
         for (int i = 0; i < UnitStat.NUM; i++) {
-            stat_product[i] = new ModMap(true);
+            stat_product[i] = new ModMap.Product();
         }        
-        perc_rating = new int[UnitPerc.NUM];
-        perc_perRating = new double[UnitPerc.NUM];
-        perc_rating_product = new ModMap[UnitPerc.NUM];
-        perc_product = new ModMap[UnitPerc.NUM];
-        perc_sum = new ModMap[UnitPerc.NUM];     
+        perc_rating = new int[UnitPerc.N];
+        perc_perRating = new double[UnitPerc.N];
+        perc_rating_product = new ModMap[UnitPerc.N];
+        perc_product = new ModMap[UnitPerc.N];
+        perc_sum = new ModMap[UnitPerc.N];     
     }
     
     public void prepareForCombat() {
-        for (int i = 0; i < UnitPerc.NUM; i++) {
+        for (int i = 0; i < UnitPerc.N; i++) {
             perc_sum[i].clear();
             perc_product[i].clear();
             perc_rating_product[i].clear();
@@ -283,11 +295,7 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     }
     
     // ---
-    
-    public int getBaseSwingTime() {
-        return 1000;
-    }
-    
+        
     public boolean isBleeding() {
         return true;
     }
@@ -321,6 +329,10 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public double getMastery() {
         return getPercent(UnitPerc.MASTERY);
+    }
+    
+    public double getAttackSpeedMod() {
+        return getHasteMod();
     }
     
     public double getHasteMod() {
@@ -565,7 +577,7 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     public void computeAndRecord(HitEvent hit) {
         // normalize it
         
-        if (hit.landed()) {            
+        if (hit.success()) {            
             
             hit.computed = hit.base * hit.caster.getDamageDoneMod(hit.spell.school);
             
@@ -714,5 +726,100 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
             }
         }*/
     }
+    
+    // ---
+    // auto-attack scheduling
+    
+    public int getBaseSwingTime() {
+        return 1000;
+    }
+    
+    public int getSwingTime() {
+        return (int)(0.5 + getBaseSwingTime() / getAttackSpeedMod());
+    }
+    
+    private boolean swingAuto;
+    private boolean swingAvailable;
+    private final Tick swing_fader = new Tick() {
+        @Override
+        public void run() {
+            swingAvailable = true;
+            trySwing();
+        }        
+    };
+    
+    public void restartSwing() {
+        swingAvailable = false;
+        world.timeline.schedIn(getSwingTime(), swing_fader);    
+    } 
+    
+    public void trySwing() {
+        if (currentTarget == null) {
+            swingAuto = false; // disable if no-target
+            return;
+        }
+        Unit target = currentTarget.u;
+        if (!isEnemy(target)) {
+            swingAuto = false; // disable if friendly
+            return;
+        }            
+        if (world.ignoreLocation) {
+            swingAt(target); // fk range!
+        } else {
+            if (target.distanceTo(world_x, world_y) < 5) {
+                return; // target out of range
+            }
+            if (!target.inFrontOf(this)) {
+                return; // not facing right direction
+            }
+            swingAt(target);
+        }    
+        restartSwing();
+    }
+    
+    private void swingAt(Unit target) {
+        
+    }
+   
+
+    // ---
+    
+    public boolean isCrowdControlImmune(int cc) {
+        if (world.ignoreCrowdControl) {
+            return false;
+        } else {
+            return cc_stackCount[cc] == CrowdControl.MAX_STACKS && world.timeline.clock < cc_resetTime[cc];
+        }
+    }
+    
+    // probably should add getExpectedCrowdControlDuration(int cc)
+    
+    // fist of fury applies a debuff
+    // which should be length of applyCrowdControl()
+    // if debuff is active, don't call applyCrowdControl() on next punch
+    
+    public int applyCrowdControl(int cc, int duration) {
+        // return duration, 0 = immune
+        if (world.ignoreCrowdControl) {
+            return duration; // allow it to land, ignore
+        }
+        if (npc && cc != CrowdControl.STUN) {
+            return duration; // only stuns dr for npcs
+        }
+        if (!npc && duration > CrowdControl.MAX_DURATION) { // too long!
+            duration = CrowdControl.MAX_DURATION;
+        }
+        if (world.timeline.clock > cc_resetTime[cc]) { // it has worn off
+            cc_stackCount[cc] = 1;            
+        } else if (cc_stackCount[cc] == CrowdControl.MAX_STACKS) { // immune
+            // don't update the reset timer
+            return 0;
+        } else {
+            duration = (int)(0.5 + duration * Math.pow(CrowdControl.DR_COEFF, cc_stackCount[cc]++));
+        }
+        cc_resetTime[cc] = world.timeline.clock + CrowdControl.RESET_DURATION;
+        return duration;        
+    }
+    
     
 }
