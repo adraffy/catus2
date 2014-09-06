@@ -1,0 +1,298 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      8954,        288]
+NotebookOptionsPosition[      7893,        246]
+NotebookOutlinePosition[      8248,        262]
+CellTagsIndexPosition[      8205,        259]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Helpers", "Section",
+ CellChangeTimes->{{3.6189636901083927`*^9, 3.618963691868764*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "indexOf", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"indexOf", "[", 
+    RowBox[{"v_", ",", "x_", ",", 
+     RowBox[{"dne_:", "Indeterminate"}]}], "]"}], ":=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p", "=", 
+       RowBox[{"Position", "[", 
+        RowBox[{"v", ",", "x", ",", 
+         RowBox[{"{", "1", "}"}], ",", 
+         RowBox[{"Heads", "\[Rule]", "False"}]}], "]"}]}], "}"}], ",", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Length", "[", "p", "]"}], "\[Equal]", "1"}], ",", 
+       RowBox[{"p", "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", "dne"}], "]"}]}], 
+    "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.6189632885610447`*^9, 3.6189633251887083`*^9}, {
+  3.618963615310886*^9, 3.61896366481408*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "lineStartCommentQ", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lineStartCommentQ", "[", "x_String", "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"StringLength", "[", "x", "]"}], "\[GreaterEqual]", "2"}], "&&", 
+    
+    RowBox[{
+     RowBox[{"StringTake", "[", 
+      RowBox[{"x", ",", "2"}], "]"}], "\[Equal]", "\"\<//\>\""}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lineStartCommentQ", "[", "___", "]"}], "=", "False"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ClearAll", "[", "stripLineStartComments", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stripLineStartComments", "[", "lines_", "]"}], ":=", 
+   RowBox[{"Select", "[", 
+    RowBox[{"lines", ",", 
+     RowBox[{
+      RowBox[{"!", 
+       RowBox[{"lineStartCommentQ", "[", "#", "]"}]}], "&"}]}], "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.618963693200749*^9, 3.61896378354066*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "getBlockLines", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"getBlockLines", "[", "name_String", "]"}], ":=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"index", "=", 
+       RowBox[{"indexOf", "[", 
+        RowBox[{"blocks", ",", "name"}], "]"}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"IntegerQ", "[", "index", "]"}], ",", 
+       RowBox[{"lines", "[", 
+        RowBox[{"[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"block0", "[", 
+            RowBox[{"[", "index", "]"}], "]"}], "+", "1"}], ";;", 
+          RowBox[{
+           RowBox[{"block1", "[", 
+            RowBox[{"[", "index", "]"}], "]"}], "-", "1"}]}], "]"}], "]"}], 
+       ",", 
+       RowBox[{"{", "}"}]}], "]"}]}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.61896379634181*^9, 3.618963904148858*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Code", "Section",
+ CellChangeTimes->{{3.618963687446621*^9, 3.618963688181244*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lines", "=", 
+   RowBox[{"ReadList", "[", 
+    RowBox[{
+    "\"\</Users/raffy/Downloads/sc_spell_data.inc\>\"", ",", "String"}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"block0suffix", "=", "\"\<[] = {\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"block0", "=", 
+   RowBox[{"Flatten", "@", 
+    RowBox[{"Position", "[", 
+     RowBox[{"lines", ",", 
+      RowBox[{"x_String", "/;", 
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"x", ",", 
+         RowBox[{"___", "~~", "block0suffix"}]}], "]"}]}]}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"block1", "=", 
+   RowBox[{"Flatten", "@", 
+    RowBox[{"Position", "[", 
+     RowBox[{"lines", ",", "\"\<};\>\""}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"blocks", "=", 
+   RowBox[{
+    RowBox[{"StringSplit", "[", 
+     RowBox[{"StringDrop", "[", 
+      RowBox[{
+       RowBox[{"lines", "[", 
+        RowBox[{"[", "block0", "]"}], "]"}], ",", 
+       RowBox[{"-", 
+        RowBox[{"StringLength", "[", "block0suffix", "]"}]}]}], "]"}], "]"}], 
+    "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", 
+      RowBox[{"-", "1"}]}], "]"}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.618963243329364*^9, 3.6189632642601767`*^9}, {
+  3.618963364986383*^9, 3.618963409643635*^9}, {3.6189634501205473`*^9, 
+  3.618963456322135*^9}, {3.618963516610924*^9, 3.618963523761609*^9}, {
+  3.6189635539365883`*^9, 3.618963554065544*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"getBlockLines", "[", "\"\<__spell_data\>\"", "]"}], "//", 
+   "stripLineStartComments"}], "//", "First"}]], "Input",
+ CellChangeTimes->{{3.6189639110347567`*^9, 3.6189639242348843`*^9}}],
+
+Cell[BoxData["\<\"  { \\\"Suicide\\\"                           ,      7, \
+0x00, 0.000000, 0x01, 0x000, 0x000,  0,  0,   0,  0,     0.0,     0.0,       \
+0,    0,    0,         0, 0x0000,   0,   0,   0,  0, 0x00000000,       0, \
+0.000,    0, 0x00000000, 0x00000000,     0,     0,  0,  0.0000000000,  0,     \
+ 0, { 0x29000100, 0x00000020, 0x00000000, 0x10000000, 0x00000000, 0x00060008, \
+0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 }, { \
+0x00000000, 0x00000000, 0x00000000, 0x00000000 }, 0, \\\"The caster commits \
+suicide, instantly killing themself.\\\", 0, 0, \
+\\\"spell_shadow_lifedrain\\\", 0, 0, 0, 0 }, /* 5 */\"\>"], "Output",
+ CellChangeTimes->{{3.618963914638113*^9, 3.6189639244698963`*^9}}]
+}, Open  ]],
+
+Cell[BoxData["bl"], "Input",
+ CellChangeTimes->{{3.6189636078396683`*^9, 3.618963607910321*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.618963458734363*^9, 3.618963553370315*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"__spell_data\"\>", ",", "\<\"__spelleffect_data\"\>", 
+   ",", "\<\"__spellpower_data\"\>", ",", "\<\"__rppmmodifier_data\"\>"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.618963485300014*^9, 3.6189634918169603`*^9}, {
+  3.618963533835465*^9, 3.61896354642581*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.618963461609583*^9, 3.6189634644273*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"9018", ",", "21841", ",", "22463", ",", "22548"}], "}"}]], "Output",\
+
+ CellChangeTimes->{{3.618963460037835*^9, 3.6189634624734497`*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"indexOf", "[", 
+   RowBox[{
+   "lines", ",", "\"\<static struct spell_data_t __spell_data[] = {\>\""}], 
+   "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.618963265189466*^9, 3.618963283027875*^9}, {
+  3.618963327703535*^9, 3.618963329835133*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Position", "[", 
+  RowBox[{"lines", ",", "\"\<};\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.6189633515846043`*^9, 3.618963361081599*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "9018", "}"}], ",", 
+   RowBox[{"{", "21841", "}"}], ",", 
+   RowBox[{"{", "22463", "}"}], ",", 
+   RowBox[{"{", "22548", "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.61896336136733*^9}]
+}, Open  ]],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.6189633955048227`*^9, 3.618963405443157*^9}}]
+}, Open  ]]
+},
+WindowSize->{955, 731},
+WindowMargins->{{Automatic, 145}, {Automatic, 13}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (June 27, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 94, 1, 64, "Section"],
+Cell[677, 25, 898, 25, 63, "Input"],
+Cell[1578, 52, 1016, 31, 97, "Input"],
+Cell[2597, 85, 961, 28, 63, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3595, 118, 89, 1, 64, "Section"],
+Cell[3687, 121, 1502, 43, 97, "Input"],
+Cell[CellGroupData[{
+Cell[5214, 168, 233, 5, 28, "Input"],
+Cell[5450, 175, 735, 9, 131, "Output"]
+}, Open  ]],
+Cell[6200, 187, 96, 1, 28, "Input"],
+Cell[CellGroupData[{
+Cell[6321, 192, 92, 1, 28, "Input"],
+Cell[6416, 195, 310, 6, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6763, 206, 90, 1, 28, "Input"],
+Cell[6856, 209, 178, 4, 28, "Output"]
+}, Open  ]],
+Cell[7049, 216, 281, 7, 28, "Input"],
+Cell[CellGroupData[{
+Cell[7355, 227, 165, 3, 28, "Input"],
+Cell[7523, 232, 245, 7, 28, "Output"]
+}, Open  ]],
+Cell[7783, 242, 94, 1, 28, "Input"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
