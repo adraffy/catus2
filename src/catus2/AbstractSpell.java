@@ -10,10 +10,64 @@ public abstract class AbstractSpell<O extends Unit> {
     public double range_sweep;
     public SpellData m;
     
+    /*
+    enum property_type_t {
+      P_GENERIC           = 0,
+      P_DURATION          = 1,
+      P_THREAT            = 2,
+      P_EFFECT_1          = 3,
+      P_STACK             = 4,
+      P_RANGE             = 5,
+      P_RADIUS            = 6,
+      P_CRIT              = 7,
+      P_UNKNOWN_1         = 8, // Unknown
+      P_PUSHBACK          = 9,
+      P_CAST_TIME         = 10,
+      P_COOLDOWN          = 11,
+      P_EFFECT_2          = 12,
+      P_UNUSED_1          = 13,
+      P_RESOURCE_COST     = 14,
+      P_CRIT_DAMAGE       = 15,
+      P_PENETRATION       = 16,
+      P_TARGET            = 17,
+      P_PROC_CHANCE       = 18, // Unconfirmed
+      P_TICK_TIME         = 19, // Unknown
+      P_TARGET_BONUS      = 20, // Improved Revenge, Glyph of Chain Heal, ...
+      P_GCD               = 21, // Only used for flat modifiers?
+      P_TICK_DAMAGE       = 22,
+      P_EFFECT_3          = 23, // Glyph of Killing Spree, Glyph of Revealing Strike (both +% damage increases)
+      P_SPELL_POWER       = 24,
+      P_UNUSED_2          = 25,
+      P_PROC_FREQUENCY    = 26,
+      P_DAMAGE_TAKEN      = 27,
+      P_DISPEL_CHANCE     = 28,
+      P_EFFECT_4          = 32,
+      P_MAX               = 29,
+    };
+    */
+    
+    
+    // Apply Aura: Modifies Buff Duration (1) 
+    //-50% = 0.5
+    public final TimeMap durTime = new TimeMap(); // Apply Aura: Modifies Buff Duration (1)
+    
+    
+    public final TimeMap gcdTime = new TimeMap(); // Apply Aura: (21)    
+    public final TimeMap castTime = new TimeMap();
+
+    //Apply Aura: Modifies Cooldown (11) -40000
+    
+    public final TimeMap cdTime = new TimeMap();
+    
+    //Apply Aura: Mod Increase Maximum Power - % (Mana)
+    //Apply Aura: Mod Increase Maximum Power - % (Mana)
+    //Apply Aura: Modifies Max Power - Flat (Energy)
+    //Apply Aura: Increase Max Power - Flat (Chi)
+    
     // Apply Aura: Modifies Power Cost (14)
     // 2014-09-03: confirmed multiplicative using mage (arcane power, arcane blast)
     // 5000 mana * (1 + 150% * stacks) * (1 + 10%)
-    public final ModMap powerCostMod = new ModMap.Product();    
+    public final ModMap powerCostModMap = new ModMap.Product();    
     
     
     public final ModMap directDoneMod = new ModMap.Product();   // Apply Aura: Modifies Damage/Healing Done

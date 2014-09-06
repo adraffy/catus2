@@ -21,7 +21,7 @@ public class Shred extends CatGenerator {
         }
         if (o.isStealthed()) {
             mod *= o.fgd.SHRED_STEALTH_DAMAGE_MOD;
-            crit += crit;            
+            crit *= o.fgd.SHRED_STEALTH_CRIT_MOD;            
         }                     
         boolean bt = o.buff_bt.tryConsume();
         HitEvent event = HitEvent.melee(m, o, target, crit, 0);

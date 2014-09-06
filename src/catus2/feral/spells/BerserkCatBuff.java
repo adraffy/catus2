@@ -17,13 +17,17 @@ public class BerserkCatBuff extends ActivatorBuff<BuffModel,Feral,FeralView> {
     public void stateChanged(boolean state) {    
         int id = m.id();
         double mod = o.fgd.BERSERK_CAT_POWER_MOD;
-        o.spell_rip.powerCostMod.setOrClear(state, id, mod);
-        o.spell_fb.powerCostMod.setOrClear(state, id, mod);
-        o.spell_maim.powerCostMod.setOrClear(state, id, mod);
-        o.spell_sr.powerCostMod.setOrClear(state, id, mod);        
-        o.spell_rake.powerCostMod.setOrClear(state, id, mod);
-        o.spell_shred.powerCostMod.setOrClear(state, id, mod);
-        o.spell_swipe.powerCostMod.setOrClear(state, id, mod);
-        o.spell_thrash_cat.powerCostMod.setOrClear(state, id, mod);        
+        if (!o.cfg.disable_perk_berserk) {
+            o.power_energy.
+        }
+        
+        o.spell_rip.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_fb.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_maim.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_sr.powerCostModMap.setOrClear(state, id, mod);        
+        o.spell_rake.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_shred.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_swipe.powerCostModMap.setOrClear(state, id, mod);
+        o.spell_thrash_cat.powerCostModMap.setOrClear(state, id, mod);        
     }  
 }

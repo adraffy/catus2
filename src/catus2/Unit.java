@@ -3,7 +3,6 @@ package catus2;
 import catus2.combat.HitEvent;
 import catus2.combat.CrowdControl;
 import catus2.buffs.Buff;
-import catus2.buffs.BuffModel;
 import catus2.procs.Trigger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,15 +88,15 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     public int getRating(int i) {
         int r = perc_rating[i];
-        return r == 0 ? 0 : (int)(0.5 + perc_rating_product[i].fold() * r / perc_perRating[i]);
+        return r == 0 ? 0 : (int)(0.5 + perc_rating_product[i].get() * r / perc_perRating[i]);
     }    
     
     public double getPercent(int i) {
-        return (getRating(i) + perc_sum[i].fold()) * perc_product[i].fold();
+        return (getRating(i) + perc_sum[i].get()) * perc_product[i].get();
     }
     
     public int getStat(int i, double extra) {
-        return (int)(0.5 + (stat_raw[i] + extra) * stat_product[i].fold());        
+        return (int)(0.5 + (stat_raw[i] + extra) * stat_product[i].get());        
     }
   
     // ---
@@ -313,9 +312,9 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     }
     
     public double getDamageDoneMod(School school) {
-        double mod = damageDone_all_product.fold();
+        double mod = damageDone_all_product.get();
         for (int i : school.indexes) {
-            mod *= damageDone_school_product[i].fold();
+            mod *= damageDone_school_product[i].get();
         }
         return mod;
     }
@@ -323,7 +322,7 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     // --
     
     public double getMovementSpeed() {
-        return movementSpeed_sum.fold();
+        return movementSpeed_sum.get();
     }
     
    
@@ -606,7 +605,7 @@ abstract public class Unit<O extends Unit<O,V>,V extends AbstractView<O>> {
     
     
     public void didDamage(HitEvent hit) {
-        System.out.println(String.format("[%s] %s %s [%s] %.0f %s", hit.caster, hit.spell.getNameAndId(), "hit", hit.target, hit.computed, hit.spell.school));
+        System.out.println(String.format("[%s] %s<%d> %s [%s] %.0f %s", hit.caster, hit.spell.id, hit.spell.name, "hit", hit.target, hit.computed, hit.spell.school));
     }
     
     

@@ -39,7 +39,7 @@ public class RPPM extends AbstractChance { //<O extends Unit> extends AbstractCh
     
     @Override
     protected boolean canProc(int t) {
-        return super.canProc() && t > lastTime;
+        return super.canProc(t) && t > lastTime;
     }
     
     @Override

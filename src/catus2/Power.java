@@ -26,7 +26,7 @@ public class Power {
     }
     
     public int adjust(int amt) {
-        return (int)(costMods.fold() * amt + 0.5);
+        return (int)(costMods.get() * amt + 0.5);
     }
     
     

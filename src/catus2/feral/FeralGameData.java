@@ -31,8 +31,9 @@ public class FeralGameData {
     public int LOTP_COOLDOWN = 6000;
        
     public int SHRED_ENERGY_COST = 40;
-    public double SHRED_DAMAGE_PER_DPS = 2.94;
-    public double SHRED_STEALTH_DAMAGE_MOD = 1.35;    
+    public double SHRED_DAMAGE_PER_DPS = 3.15;
+    public double SHRED_STEALTH_DAMAGE_MOD = 1.35; 
+    public double SHRED_STEALTH_CRIT_MOD = 2;
     
     public int RAKE_ENERGY_COST = 35;
     public double RAKE_TICK_DAMAGE_PER_AP = 0.475;

@@ -12,6 +12,9 @@ public class FeralConfig extends ClassConfig {
     public boolean disable_ooc;
     public boolean disable_lotp;
     
+    
+    public boolean disable_perk_berserk;
+    
     //int initialEnergy;
     
     // glyphs

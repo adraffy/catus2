@@ -114,7 +114,7 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
     @Override
     public double getMovementSpeed() {
         switch (currentForm) {
-            case CAT:   return super.getMovementSpeed() * movementSpeed_cat_sum.fold();
+            case CAT:   return super.getMovementSpeed() * movementSpeed_cat_sum.get();
             //case BEAR:  return super.getMovementSpeed() * movementSpeed_bearForm_mods.product();
             default:    return super.getMovementSpeed();                
         }        
@@ -225,10 +225,10 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         public void stateChanged(boolean state) {
             int id = m.id();
             v.o.spellPower_product.setOrClear(state, id, fgd.HOTW_SPELL_POWER_MOD);
-            v.o.spell_mf.powerCostMod.setOrClear(state, id, 0);
-            v.o.spell_wrath.powerCostMod.setOrClear(state, id, 0);
-            v.o.spell_rejuv.powerCostMod.setOrClear(state,id, 0);
-            v.o.spell_ht.powerCostMod.setOrClear(state, id, 0);  
+            v.o.spell_mf.powerCostModMap.setOrClear(state, id, 0);
+            v.o.spell_wrath.powerCostModMap.setOrClear(state, id, 0);
+            v.o.spell_rejuv.powerCostModMap.setOrClear(state,id, 0);
+            v.o.spell_ht.powerCostModMap.setOrClear(state, id, 0);  
         }
     };
     
@@ -469,6 +469,15 @@ public class Feral extends PlayerUnit<Feral,FeralView,FeralConfig> {
         if (!cfg.disable_lotp) {
             triggerList.add(trigger_lotp);
         }
+        
+        if (cfg.bonus_t14_2pc) {
+            spell_shred.directDoneMod.set(SpellId.Druid.Feral.Bonus.T14_2PC_BUFF, fgd.BONUS_T14_2PC_SHRED_DAMAGE_MOD);
+        }
+        
+        if (cfg.bonus_t14_4pc) {
+            
+        }
+        
         
     }
     

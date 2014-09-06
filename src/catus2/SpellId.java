@@ -69,6 +69,8 @@ public class SpellId {
             static public final int SHARPENED_CLAWS = 165372;
             static public final int LEATHER_SPECIALIZATION = 86097;
             static public class Bonus {
+                static public final int T14_2PC_BUFF = 123084; // Item - Druid T14 Feral 2P Bonus
+                static public final int T14_4PC_BUFF = 123085; // Item - Druid T14 Feral 4P Bonus
                 static public final int T15_4PC_BUFF = 138358; // tiger's fury
                 static public final int T16_2PC_BUFF = 144865; // feral fury
                 static public final int T16_4PC_BUFF = 146874; // feral rage

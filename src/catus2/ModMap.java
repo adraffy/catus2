@@ -11,7 +11,6 @@ public abstract class ModMap {
     static final int INIT_CAP = 8; 
     static final int NULL_KEY = 0;
     
-    public final double base;
     protected boolean dirty;
     protected int[] keys = new int[INIT_CAP];
     protected int[] free = new int[INIT_CAP];
@@ -19,13 +18,34 @@ public abstract class ModMap {
     private int freeIndex;   
     private int freeAvail;
     private double cached;
-        
-    static public class Sum extends ModMap {
-        public Sum() { this(0); }
-        public Sum(double base) { super(base); }
+
+    static public class Time extends ModMap {
+        static public final double T = 50;
+        public double base;
+        public Time() { super(); }
         @Override
         protected double compute() {
-            double sum = base;
+            double b = base;
+            double c = 1;
+            for (int i = 0; i < keys.length; i++) {
+                if (keys[i] != NULL_KEY) {
+                    double x = vals[i];
+                    if (Math.abs(x) > T) {
+                        b += x;
+                    } else {
+                        c *= vals[i];
+                    }                    
+                }                
+            }
+            return (int)(0.5 + c * b);
+        }
+    }
+    
+    static public class Sum extends ModMap {
+        public Sum() { super(); }
+        @Override
+        protected double compute() {
+            double sum = 1;
             for (int i = 0; i < keys.length; i++) {
                 if (keys[i] != NULL_KEY) {
                     sum += vals[i];
@@ -36,11 +56,10 @@ public abstract class ModMap {
     }
     
     static public class Product extends ModMap {
-        public Product() { this(1); }
-        public Product(double base) { super(base); }
+        public Product() { super(); }
         @Override
         protected double compute() {
-            double prod = base;
+            double prod = 1;
             for (int i = 0; i < keys.length; i++) {
                 if (keys[i] != NULL_KEY) {
                     prod *= vals[i];
@@ -51,11 +70,10 @@ public abstract class ModMap {
     }
     
     static public class Minimum extends ModMap {
-        public Minimum() { this(Double.POSITIVE_INFINITY); }
-        public Minimum(double base) { super(base); }
+        public Minimum() { super(); }
         @Override
         protected double compute() {
-            double min = base;
+            double min = Double.POSITIVE_INFINITY;
             for (int i = 0; i < keys.length; i++) {
                 if (keys[i] != NULL_KEY) {
                     min = Math.min(min, vals[i]);
@@ -66,11 +84,10 @@ public abstract class ModMap {
     }
     
     static public class Maximum extends ModMap {
-        public Maximum() { this(Double.NEGATIVE_INFINITY); }
-        public Maximum(double base) { super(base); }
+        public Maximum() { super(); }
         @Override
         protected double compute() {
-            double max = base;
+            double max = Double.NEGATIVE_INFINITY;
             for (int i = 0; i < keys.length; i++) {
                 if (keys[i] != NULL_KEY) {
                     max = Math.max(max, vals[i]);
@@ -80,8 +97,7 @@ public abstract class ModMap {
         }        
     }
     
-    private ModMap(double base) {
-        this.base = base;
+    private ModMap() {
         clear();
     }
     
@@ -96,7 +112,7 @@ public abstract class ModMap {
     
     abstract protected double compute();
     
-    public double fold() {
+    public double get() {
         if (dirty) {   
             cached = compute();
             dirty = false;
