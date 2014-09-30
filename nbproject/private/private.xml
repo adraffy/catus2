@@ -3,58 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/Main.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/chance/ChanceFactory.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/talents/Incarnation.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/chance/PPM.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/HealingTouch.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/QuickStack.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/World.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/SchoolT.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/FeralSpell.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/finishers/FerociousBite.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/ProductMap.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/SpellId.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralBleed.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/generators/Rake.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/Power.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/finishers/CatFinisher.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/TigersFury.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/aoe/ThrashBear.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralView.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/AbstractSpell.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/CatForm.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/chance/RPPM.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/generators/Shred.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/generators/MoonfireCat.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralFormT.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/Tick.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/Timeline.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/buffs/ProductBuff.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/TargetStyle.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/Unit.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/StampedingRoar.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/Typhoon.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/finishers/Rip.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/OriginT.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/AttackT.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/Feral.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/procs/Trigger.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/buffs/AbstractBuff.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/procs/BuffTrigger.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/buffs/AbstractBuffModel.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralGameData.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/UnitList.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/chance/Probability.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/aoe/Swipe.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralConfig.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/chance/AbstractChance.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/finishers/SavageRoar.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/generators/CatGenerator.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/GameHelp.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/FeralBuff.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/spells/Rejuvenation.java</file>
-            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/feral/aoe/ThrashCat.java</file>
+            <file>file:/Users/raffy/Documents/NetBeansProjects/Catus2/src/catus2/IntSet.java</file>
         </group>
     </open-files>
 </project-private>
